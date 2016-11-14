@@ -258,12 +258,12 @@ class Push(_Instruction):
     syntax: push register -> push register on the stack
     """
     def __init__(self, *args):
-        super(CustomSet, self).__init__(*args)
+        super(Push, self).__init__(*args)
         self.args_nb = 1
         self.jump_line = 1
     
     def parse(self, env):
-        return [self.addThing(0b11101, 11) + self.addThing(self.read_register(self.words[1], False), 0)]
+        return [self.addThing(0b00001, 11) + self.addThing(self.read_register(self.words[1], False), 0)]
 
 
 class Pop(_Instruction):
@@ -272,12 +272,12 @@ class Pop(_Instruction):
     syntax: pop register -> pop the top of the stack in register
     """
     def __init__(self, *args):
-        super(CustomSet, self).__init__(*args)
+        super(Pop, self).__init__(*args)
         self.args_nb = 1
         self.jump_line = 1
     
     def parse(self, env):
-        return [self.addThing(0b111001, 10) + self.addThing(self.read_register(self.words[1], False), 0)]
+        return [self.addThing(0b1111, 12) + self.addThing(0b1000, 4) + self.addThing(self.read_register(self.words[1], False), 0)]
 
 
 class Letl(_Instruction):

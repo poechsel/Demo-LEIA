@@ -35,7 +35,10 @@ std::string dissassemble_remainder(const uword opcode) {
 std::string dissassemble(const uword opcode) {
 	switch (opcode>>12) {
 		case 0b0000: //wmem
-			return "wmem" + getRegStr((opcode>>4)&0xF) + getAdress(toUWord(opcode));
+			if (opcode & 0b0000100000000000)
+				return "push" + getRegStr(toUWord(opcode));
+			else
+				return "wmem" + getRegStr((opcode>>4)&0xF) + getAdress(toUWord(opcode));
 			break;
 		case 0b0001: //add
 			return "add " + dissassemble_remainder(opcode);
@@ -102,6 +105,8 @@ std::string dissassemble(const uword opcode) {
 			} else {
 				if (opcode & 0b10000)
 					return "copy " + getRegStr(getExtDestination(opcode)) + getRegStr(toUWord(opcode));
+				else if (opcode & 0b10000000)
+					return "pop " + getRegStr(toUWord(opcode));
 				else
 					return "rmem " + getRegStr(getExtDestination(opcode)) + getAdress(toUWord(opcode));
 			}

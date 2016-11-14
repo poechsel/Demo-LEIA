@@ -168,6 +168,6 @@ int main(int argc, char* argv[]) {
 
 
 	screen.join();
-
+	printf("\n");
 	return 0;
 }

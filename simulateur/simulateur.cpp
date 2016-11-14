@@ -3,7 +3,11 @@
 void evaluate(const uword opcode, Machine &machine, Param &param) {
 	switch (opcode>>12) {
 		case 0b0000: //wmem
-			machine.memory[machine.registers[toUWord(opcode)]] = machine.registers[(opcode>>4)&0xF];
+			if (opcode & 0b0000100000000000) { //push
+				machine.memory[machine.registers[14]++] = machine.registers[toUWord(opcode)];
+			} else {
+				machine.memory[machine.registers[toUWord(opcode)]] = machine.registers[(opcode>>4)&0xF];
+			}
 			machine.pc++;
 			break;
 		case 0b0001: //add
@@ -133,7 +137,9 @@ void evaluate(const uword opcode, Machine &machine, Param &param) {
 			machine.pc++;
 			if (opcode & 0b10000)
 				machine.registers[getExtDestination(opcode)] = machine.registers[toUWord(opcode)];
-			else {
+			else if (opcode & 0b10000000) {
+				machine.registers[toUWord(opcode)] = machine.memory[--machine.registers[14]];
+			} else {
 				machine.registers[getExtDestination(opcode)] = machine.memory[(uword) machine.registers[toUWord(opcode)]];
 			}
 			break;
