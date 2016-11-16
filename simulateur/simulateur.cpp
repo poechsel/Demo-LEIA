@@ -126,7 +126,15 @@ void evaluate(const uword opcode, Machine &machine, Param &param) {
 			break;}
 		case 0b1110:
 			switch ((opcode >> 10) & 0b11) {
-				default: {
+				case 1: {
+					printf("r%d = %d\n", toUWord(opcode), machine.registers[toUWord(opcode)]);	
+					machine.pc++;
+					break;
+				} case 2: {
+					printf("%c", opcode & 0xff);
+					machine.pc++;
+					break;
+				}default: {
 					refresh = true;
 					while (refresh) {};
 					machine.pc++;

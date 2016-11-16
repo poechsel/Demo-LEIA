@@ -7,13 +7,27 @@ leth r0 0xFF
 .set r14 stack
 
 
+letl r0 0
+letl r1 0
+letl r2 50
+letl r3 0
+letl r4 0
+letl r5 50
+
+call filltri
+
+jump 0
+
 letl r6 0x67
 leth r6 0x1
 loop:
 	.set r13 points
 	.set r7 points
+	.set r5 transformed_points
 	add r7 r7 12 
 	add r7 r7 12 
+	add r5 r5 8
+	add r5 r5 8
 	letl r0 0
 	call clearscr
 	verts_loop:
@@ -23,6 +37,7 @@ loop:
 		rmem r1 [r7] 
 		sub r7 r7 1
 		rmem r0 [r7] 
+		push r5
 		push r7
 		push r13
 		push r6
@@ -48,18 +63,189 @@ loop:
 		copy r1 r0
 		letl r0 0xFF
 		pop r6
-		call plotpx
+		push r1
+		push r2
+		;call plotpx
+		pop r2
+		pop r1
 		pop r13
+		pop r7
+		pop r5
+
+		sub r5 r5 1
+		wmem r2 [r5]
+		sub r5 r5 1
+		wmem r1 [r5]
+		
+		snif r7 eq r13
+			jump verts_loop
+
+	.set r7 edges
+	.set r13 edges
+	add r7 r7 12
+	add r7 r7 12
+	print "new loop"
+	edges_loop:
+		sub r7 r7 1
+		rmem r10 [r7]
+		sub r7 r7 1
+		rmem r11 [r7]
+		print "current"
+		print r7
+		print r10
+		print r11
+		push r7
+		.set r12 transformed_points
+		copy r7 r10
+		lsl r7 r7 1
+		add r7 r7 r12
+		copy r10 r7
+
+		copy r7 r11
+		lsl r7 r7 1
+		add r7 r7 r12
+		copy r11 r7
+
+		rmem r1 [r10]
+		copy r7 r10
+		add r7 r7 1
+		copy r10 r7
+		rmem r2 [r10]
+		rmem r3 [r11]
+		copy r7 r11
+		add r7 r7 1
+		copy r11 r7
+		rmem r4 [r11]
+		letl r0 0xff
+		push r15
+		push r6
+		call line
+		pop r6
+		pop r15
 		pop r7
 
 		snif r7 eq r13
-			jump verts_loop
+			jump edges_loop
 
 	refresh
 	sub r6 r6 1
 	snif r6 eq 0
 		jump loop
 jump 0
+
+.align16
+filltri:
+	push r15
+	;; param: r0, r1, r2, r3, r4, r5
+	copy r13 r5
+	copy r12 r4
+	copy r11 r3
+	copy r10 r2
+	copy r9 r1
+	copy r8 r0
+
+	letl r7 160
+	leth r7 0
+
+	__fill_loopx:
+		letl r6 128
+		leth r6 0
+		__fill_loopy:
+			print r6
+			sub r0 r6 r12
+			sub r1 r9 r13
+			push r6
+			push r7
+			call mult32s	
+			pop r7
+			pop r6
+			copy r5 r3
+			sub r0 r8 r12
+			sub r1 r7 r13
+			push r6
+			push r7 
+			push r5
+			call mult32s
+			pop r5
+			pop r7
+			pop r6
+			sub r5 r5 r3
+			print r5
+			sub r0 r6 r10
+			sub r1 r9 r11
+			push r6
+			push r7
+			push r5
+			call mult32s	
+			pop r5
+			pop r7
+			pop r6
+			copy r4 r3
+			sub r0 r8 r10
+			sub r1 r7 r11
+			push r6
+			push r7 
+			push r5
+			push r4
+			call mult32s
+			pop r4
+			pop r5
+			pop r7
+			pop r6
+			sub r4 r4 r3
+			print r4
+			or r5 r5 r4
+
+			sub r0 r6 r8
+			sub r1 r11 r9
+			push r6
+			push r7
+			push r5
+			call mult32s	
+			pop r5
+			pop r7
+			pop r6
+			copy r4 r3
+			sub r0 r10 r8
+			sub r1 r7 r9
+			push r6
+			push r7 
+			push r5
+			push r4
+			call mult32s
+			pop r4
+			pop r5
+			pop r7
+			pop r6
+			sub r4 r4 r3
+			print r4
+			or r5 r5 r4
+
+			
+			lsr r5 r5 15
+			snif r5 eq 1
+				jump __fill_end
+
+			push r6
+			push r7
+			copy r0 r6
+			copy r1 r7
+			letl r0 50
+			call plotpx
+			pop r7
+			pop r6
+			__fill_end:
+
+			sub r6 r6 1
+			snif r6 eq -1
+				jump __fill_loopy
+		sub r7 r7 1
+		snif r7 eq -1
+			jump __fill_loopx
+
+
+	pop r15
+	return
 
 
 .align16
@@ -172,7 +358,7 @@ projection:
 #include mathlut.s
 
 points:
-	.word 0x0100
+	.word 0x0100						
 	.word 0xFF00
 	.word 0x0100
 
@@ -203,4 +389,42 @@ points:
 	.word 0x0100
 	.word 0xFF00
 	.word 0xFF00
+transformed_points:
+	.reserve 16
+edges:
+	.word 0	
+	.word 1
+	
+	.word 0	
+	.word 7
+	
+	.word 0	
+	.word 3
+	
+	.word 1
+	.word 2
+	
+	.word 1	
+	.word 4
+	
+	.word 2		
+	.word 3
+	
+	.word 2		
+	.word 5
+	
+	.word 3	
+	.word 6
+	
+	.word 4	
+	.word 7
+	
+	.word 4
+	.word 5
+	
+	.word 5	
+	.word 6
+	
+	.word 6	
+	.word 7
 stack:

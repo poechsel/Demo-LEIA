@@ -183,6 +183,36 @@ class CustomInclude(_Instruction):
         super(CustomInclude, self).__init__(*args)
         self.args_nb = 1
 
+class CustomReserve(_Instruction):
+    """
+    represents a .reserve instruction
+    syntax: .reserve n -> put n null words in memory
+    """
+    def __init__(self, *args):
+        super(CustomReserve, self).__init__(*args)
+        self.jump_line = max(0, self.to_num(self.words[1]))
+
+    def getOpcodes(self, env):
+        return [0] * self.jump_line
+
+class Print(_Instruction):
+    def __init__(self, *args):
+        super(Print, self).__init__(*args)
+        self.jump_line = len(self.words[1]) - 1
+        if self.words[1][0] == 'r':
+            self.jump_line = 1
+        print(self.words)
+        self.args_nb = 1
+    def parse(self, env):
+        print('test', self.words)
+        if self.words[1][0] == 'r':
+            return [self.addThing(0b1110, 12) + self.addThing(1, 10) + self.addThing(self.read_register(self.words[1]), 0)]
+        else:
+            o = []
+            for c in self.words[1][1:-1]:
+                o += [self.addThing(0b1110, 12) + self.addThing(2, 10) + self.addThing(ord(c), 0)]
+            print("fail", o)
+            return o + [self.addThing(0b1110, 12) + self.addThing(2, 10) + self.addThing(ord('\n'), 0)]
 
 class CustomString(_Instruction):
     """
@@ -230,6 +260,19 @@ class CustomAlign16(_Instruction):
         for _ in range(self.jump_line):
             c += Copy(["copy", "r0", "r0"], "", "", "").parse(env)
         return c
+
+class CustomLet(_Instruction):
+    def __init__(self, *args):
+        super(CustomLet, self).__init__(*args)
+        self.args_nb = 2
+        self.jump_line = 2
+    def parse(self, env):
+        n = self.to_num(self.words[2])
+        r = self.read_register(self.words[1])
+        if not isinstance(n, list):
+            return [self.addThing(0b1100, 12) + self.addThing(r, 8) + self.addThing(n & 0x00FF, 0), \
+                    self.addThing(0b1101, 12) + self.addThing(r, 8) + self.addThing((n & 0xFF00) >> 8, 0)]
+        return [n]
 
 
 class CustomSet(_Instruction):
@@ -515,6 +558,7 @@ class _Environment:
         for name, obj in inspect.getmembers(sys.modules[__name__]):
             if inspect.isclass(obj) and "_" != name[0]:
                 self.instr_set[name.lower().replace("custom", ".")] = obj
+        print(self.instr_set)
     
 
 def load_file(file_path):
