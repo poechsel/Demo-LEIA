@@ -16,7 +16,7 @@ letl r5 50
 
 call filltri2
 
-jump 0
+;jump 0
 
 letl r6 0x67
 leth r6 0x1
@@ -126,7 +126,54 @@ loop:
 
 		snif r7 eq r13
 			jump edges_loop
+	.set r7 triangles
+	add r7 r7 12
+	add r7 r7 12
+	add r7 r7 12
+	.set r13 triangles
+	push r6
+	faces_loop:
+		sub r7 r7 1
+		rmem r9 [r7]
+		sub r7 r7 1
+		rmem r10 [r7]
+		sub r7 r7 1
+		rmem r11 [r7]
+		push r7
+		.set r12 transformed_points
+		copy r7 r9
+		lsl r7 r7 1
+		add r7 r7 r12
+		rmem r1 [r7]
+		add r7 r7 1
+		rmem r2 [r7]
+		
+		copy r7 r10
+		lsl r7 r7 1
+		add r7 r7 r12
+		rmem r3 [r7]
+		add r7 r7 1
+		rmem r4 [r7]
+		
+		copy r7 r11
+		lsl r7 r7 1
+		add r7 r7 r12
+		rmem r5 [r7]
+		add r7 r7 1
+		rmem r6 [r7]
+		
+		push r13
+		.let r0 0x0008
+		
+		call filltri2
 
+		pop r13
+		pop r7
+		snif r7 eq r13
+			jump faces_loop
+
+
+	pop r6	
 	refresh
 	sub r6 r6 1
 	snif r6 eq 0
@@ -137,18 +184,18 @@ jump 0
 filltri2:
 	push r15
 
-	copy r13 r5
-	copy r12 r4
-	copy r11 r3
-	copy r10 r2
-	copy r9 r1
-	copy r8 r0
-
+	copy r13 r6
+	copy r12 r5
+	copy r11 r4
+	copy r10 r3
+	copy r9 r2
+	copy r8 r1
+	;;r6 <- color
 	.let r7 128
 	__filltri2_loopy:
 		.let r6 160
 		__filltri2_loopx:
-			.let r0 0xFF00
+			push r0
 			copy r1 r6
 			copy r2 r7
 			push r6 
@@ -198,6 +245,7 @@ filltri2:
 			.let r0 0xff00
 			copy r1 r6
 			copy r2 r7
+			pop r0
 			snif r5 neq 0
 				call plotpx
 			sub r6 r6 1
@@ -207,23 +255,14 @@ filltri2:
 		snif r7 eq -1
 			jump __filltri2_loopy
 	
-	print "oki"
 	refresh
 	pop r15
-	print r15
 	return
 
 .align16
 orientpointtri:
 	;;param: r0, r1, r2, r3, r4, r5 the coordinates (r0 is A, r1 is B and r2 the current pt (or C here)
 	push r15
-	print "begin"
-	print r0
-	print r1
-	print r2
-	print r3
-	print r4
-	print r5
 	sub r5 r5 r1 ; <- r5 = C.y - A.y
 	sub r2 r2 r0 ; <- r2 = B.x - A.x
 	sub r3 r3 r1 ; <- r3 = B.y - A.y
@@ -242,122 +281,7 @@ orientpointtri:
 	call mul16
 	pop r0
 	sub r0 r0 r2
-	print r0
 	lsr r0 r0 15
-	pop r15
-	return
-
-.align16
-filltri:
-	push r15
-	;; param: r0, r1, r2, r3, r4, r5
-	copy r13 r5
-	copy r12 r4
-	copy r11 r3
-	copy r10 r2
-	copy r9 r1
-	copy r8 r0
-
-	letl r7 160
-	leth r7 0
-
-	__fill_loopx:
-		letl r6 128
-		leth r6 0
-		__fill_loopy:
-			print r6
-			sub r0 r6 r12
-			sub r1 r9 r13
-			push r6
-			push r7
-			call mul16
-			pop r7
-			pop r6
-			copy r5 r2
-			sub r0 r8 r12
-			sub r1 r7 r13
-			push r6
-			push r7 
-			push r5
-			call mul16
-			pop r5
-			pop r7
-			pop r6
-			sub r5 r5 r2
-			print r5
-			sub r0 r6 r10
-			sub r1 r9 r11
-			push r6
-			push r7
-			push r5
-			call mul16
-			pop r5
-			pop r7
-			pop r6
-			copy r4 r2
-			sub r0 r8 r10
-			sub r1 r7 r11
-			push r6
-			push r7 
-			push r5
-			push r4
-			call mul16
-			pop r4
-			pop r5
-			pop r7
-			pop r6
-			sub r4 r4 r2
-			print r4
-			or r5 r5 r4
-
-			sub r0 r6 r8
-			sub r1 r11 r9
-			push r6
-			push r7
-			push r5
-			call mul16
-			pop r5
-			pop r7
-			pop r6
-			copy r4 r2
-			sub r0 r10 r8
-			sub r1 r7 r9
-			push r6
-			push r7 
-			push r5
-			push r4
-			call mul16
-			pop r4
-			pop r5
-			pop r7
-			pop r6
-			sub r4 r4 r2
-			print r4
-			or r5 r5 r4
-
-			
-			lsr r5 r5 15
-			snif r5 eq 1
-				jump __fill_end
-
-			push r6
-			push r7
-			copy r0 r6
-			copy r1 r7
-			letl r0 -1
-			call plotpx
-			pop r7
-			pop r6
-			__fill_end:
-
-			sub r6 r6 1
-			snif r6 eq -1
-				jump __fill_loopy
-		sub r7 r7 1
-		snif r7 eq -1
-			jump __fill_loopx
-
-
 	pop r15
 	return
 
