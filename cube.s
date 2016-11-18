@@ -8,24 +8,17 @@ leth r0 0xFF
 .set r14 stack
 .set r7 stack
 
-letl r0 20
-letl r1 20
-letl r2 50
-letl r3 0
-letl r4 70
-letl r5 50
-
 .let r0 0xffff
-.let r1 0
-.let r2 0
-.let r3 50
-.let r4 50
-call line
-refresh
+letl r1 0
+letl r2 0
+letl r3 50
+letl r4 0
+letl r5 00
+letl r6 50
+
 
 call filltri2
 
-jump 0
 
 .let r6 359
 loop:
@@ -133,51 +126,52 @@ loop:
 			jump edges_loop
 
 
-;	.set r7 triangles
-;	add r7 r7 12
-;	add r7 r7 12
-;	add r7 r7 12
-;	.set r13 triangles
-;	.push r6
-;	faces_loop:
-;		sub r7 r7 1
-;		rmem r9 [r7]
-;		sub r7 r7 1
-;		rmem r10 [r7]
-;		sub r7 r7 1
-;		rmem r11 [r7]
-;		.push r7
-;		.set r12 transformed_points
-;		copy r7 r9
-;		lsl r7 r7 1
-;		add r7 r7 r12
-;		rmem r1 [r7]
-;		add r7 r7 1
-;		rmem r2 [r7]
-;		
-;		copy r7 r10
-;		lsl r7 r7 1
-;		add r7 r7 r12
-;		rmem r3 [r7]
-;		add r7 r7 1
-;		rmem r4 [r7]
-;		
-;		copy r7 r11
-;		lsl r7 r7 1
-;		add r7 r7 r12
-;		rmem r5 [r7]
-;		add r7 r7 1
-;		rmem r6 [r7]
-;		
-;		.push r13
-;		.let r0 0x0008
-;		
-;		call filltri2
-;
-;		.pop r13
-;		.pop r7
-;		snif r7 eq r13
-;			jump faces_loop
+	.push r6
+	.set r6 triangles
+	add r6 r6 12
+	add r6 r6 12
+	add r6 r6 12
+	.set r13 triangles
+	faces_loop:
+		sub r6 r6 1
+		rmem r9 [r6]
+		sub r6 r6 1
+		rmem r10 [r6]
+		sub r6 r6 1
+		rmem r11 [r6]
+		.push r6
+		.set r12 transformed_points
+		copy r6 r9
+		lsl r6 r6 1
+		add r6 r6 r12
+		rmem r1 [r6]
+		add r6 r6 1
+		rmem r2 [r6]
+		
+		copy r6 r10
+		lsl r6 r6 1
+		add r6 r6 r12
+		rmem r3 [r6]
+		add r6 r6 1
+		rmem r4 [r6]
+		
+		copy r6 r11
+		lsl r6 r6 1
+		add r6 r6 r12
+		rmem r5 [r6]
+		add r6 r6 1
+		.push r6
+		rmem r6 [r6]
+		
+		.push r13
+		.let r0 0x0008
+		
+		call filltri2
+		.pop r13
+		.pop r6
+		.pop r6
+		snif r6 eq r13
+			jump faces_loop
 
 
 	.pop r6	
@@ -198,27 +192,27 @@ filltri2:
 	copy r9 r2
 	copy r8 r1
 	;;r6 <- color
-	.let r7 128
+	.let r14 128
 	__filltri2_loopy:
 		.let r6 160
 		__filltri2_loopx:
 			.push r0
 			copy r1 r6
-			copy r2 r7
+			copy r2 r14
 			.push r6 
-			.push r7
+			.push r14
 
 			copy r0 r10
 			copy r1 r11
 			copy r2 r12
 			copy r3 r13
 			copy r4 r6
-			copy r5 r7
+			copy r5 r14
 			call orientpointtri
 			
-			.pop r7
+			.pop r14
 			.pop r6
-			.push r7
+			.push r14
 			.push r6
 			.push r0
 
@@ -227,13 +221,13 @@ filltri2:
 			copy r2 r8
 			copy r3 r9
 			copy r4 r6
-			copy r5 r7
+			copy r5 r14
 			call orientpointtri
 			.pop r5
 			.pop r6
-			.pop r7
+			.pop r14
 			add r5 r5 r0
-			.push r7
+			.push r14
 			.push r6 
 			.push r5
 			
@@ -242,24 +236,26 @@ filltri2:
 			copy r2 r10
 			copy r3 r11
 			copy r4 r6
-			copy r5 r7
+			copy r5 r14
 			call orientpointtri
 			.pop r5
 			.pop r6
-			.pop r7
+			.pop r14
 			add r5 r5 r0
 
 			.let r0 0xff00
 			copy r1 r6
-			copy r2 r7
+			copy r2 r14
 			.pop r0
 			snif r5 neq 0
 				call plotpx
 			sub r6 r6 1
 			snif r6 eq -1
 				jump __filltri2_loopx
-		sub r7 r7 1
-		snif r7 eq -1
+		add r5 r14 0
+		sub r5 r5 1
+		copy r14 r5
+		snif r5 eq -1
 			jump __filltri2_loopy
 	
 	refresh
