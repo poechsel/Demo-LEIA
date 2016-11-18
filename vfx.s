@@ -8,10 +8,12 @@ line:
 
 	;r5 -> memory
 
-	;because apparently the origin is in bottom left
+
 	letl r7 0x5f
 	leth r7 0xff
-	sub r2 r2 1
+	;sub r2 r2 1 <- commented for a fix
+	add r4 r4 1 ;<- also in the fix
+	
 	lsl r6 r2 7
 	sub r7 r7 r6
 	lsl r6 r2 5

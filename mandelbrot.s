@@ -22,7 +22,7 @@ loop_x:
 		copy r12 r2
 		xor r4 r4 r4 ;an
 		xor r5 r5 r5 ;bn
-		letl r6 16	 ;max nb of iter
+		letl r6 31	 ;max nb of iter
 		leth r6 0
 		loop_iter:
 			push r6
@@ -80,15 +80,20 @@ loop_x:
 			pop r5
 			pop r4
 			add r6 r6 r0
-			letl r7 0x07
-			leth r7 0
-			snif r6 lt r7
+			letl r7 0x00
+			leth r7 0x04
+			snif r6 gt r7
 				jump iter_end
+
 			letl r0 0xff
+			;xor r0 r0 r0
+			;copy r0 r6
+			;lsl r0 r0 7
+			pop r6
+						
 			xor r0 r0 r0
 			copy r0 r6
-			lsl r0 r0 7
-			pop r6
+			lsl r0 r0 2
 			pop r2
 			pop r1
 			
@@ -115,7 +120,7 @@ loop_x:
 			jump loop_y
 	sub r0 r0 1
 	sub r2 r2 4
-	print r0
+	;print r0
 	snif r0 eq -1
 		jump loop_x
 

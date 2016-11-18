@@ -118,7 +118,7 @@ add r4 r2 r1
 	sub r4 r4 r6
 	sub r4 r4 r6
 	__putchar_loopy:
-		rmeml r3 [r5]
+		rmem r3 [r5]
 		letl r2 8 
 		add r4 r4 8
 		__putchar_loopx:
@@ -162,5 +162,5 @@ clearscr:
 			jump ____loop_clrscr
 	return
 message:
-.string "Hello world!"
+.string "Hello, world"
 #include fonts_data.s

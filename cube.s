@@ -7,14 +7,14 @@ leth r0 0xFF
 .set r14 stack
 
 
-letl r0 0
-letl r1 0
+letl r0 20
+letl r1 20
 letl r2 50
 letl r3 0
-letl r4 0
+letl r4 70
 letl r5 50
 
-call filltri
+call filltri2
 
 jump 0
 
@@ -134,6 +134,120 @@ loop:
 jump 0
 
 .align16
+filltri2:
+	push r15
+
+	copy r13 r5
+	copy r12 r4
+	copy r11 r3
+	copy r10 r2
+	copy r9 r1
+	copy r8 r0
+
+	.let r7 128
+	__filltri2_loopy:
+		.let r6 160
+		__filltri2_loopx:
+			.let r0 0xFF00
+			copy r1 r6
+			copy r2 r7
+			push r6 
+			push r7
+
+			copy r0 r10
+			copy r1 r11
+			copy r2 r12
+			copy r3 r13
+			copy r4 r6
+			copy r5 r7
+			call orientpointtri
+			
+			pop r7
+			pop r6
+			push r7
+			push r6
+			push r0
+
+			copy r0 r12
+			copy r1 r13
+			copy r2 r8
+			copy r3 r9
+			copy r4 r6
+			copy r5 r7
+			call orientpointtri
+			pop r5
+			pop r6
+			pop r7
+			add r5 r5 r0
+			push r7
+			push r6 
+			push r5
+			
+			copy r0 r8
+			copy r1 r9
+			copy r2 r10
+			copy r3 r11
+			copy r4 r6
+			copy r5 r7
+			call orientpointtri
+			pop r5
+			pop r6
+			pop r7
+			add r5 r5 r0
+
+			.let r0 0xff00
+			copy r1 r6
+			copy r2 r7
+			snif r5 neq 0
+				call plotpx
+			sub r6 r6 1
+			snif r6 eq -1
+				jump __filltri2_loopx
+		sub r7 r7 1
+		snif r7 eq -1
+			jump __filltri2_loopy
+	
+	print "oki"
+	refresh
+	pop r15
+	print r15
+	return
+
+.align16
+orientpointtri:
+	;;param: r0, r1, r2, r3, r4, r5 the coordinates (r0 is A, r1 is B and r2 the current pt (or C here)
+	push r15
+	print "begin"
+	print r0
+	print r1
+	print r2
+	print r3
+	print r4
+	print r5
+	sub r5 r5 r1 ; <- r5 = C.y - A.y
+	sub r2 r2 r0 ; <- r2 = B.x - A.x
+	sub r3 r3 r1 ; <- r3 = B.y - A.y
+	sub r4 r4 r0 ; <- r4 = C.x - A.x
+	push r3
+	push r4
+	copy r0 r2
+	copy r1 r5
+	call mul16
+	copy r0 r2
+	pop r4
+	pop r3
+	push r0
+	copy r0 r3
+	copy r1 r4
+	call mul16
+	pop r0
+	sub r0 r0 r2
+	print r0
+	lsr r0 r0 15
+	pop r15
+	return
+
+.align16
 filltri:
 	push r15
 	;; param: r0, r1, r2, r3, r4, r5
@@ -156,43 +270,43 @@ filltri:
 			sub r1 r9 r13
 			push r6
 			push r7
-			call mult32s	
+			call mul16
 			pop r7
 			pop r6
-			copy r5 r3
+			copy r5 r2
 			sub r0 r8 r12
 			sub r1 r7 r13
 			push r6
 			push r7 
 			push r5
-			call mult32s
+			call mul16
 			pop r5
 			pop r7
 			pop r6
-			sub r5 r5 r3
+			sub r5 r5 r2
 			print r5
 			sub r0 r6 r10
 			sub r1 r9 r11
 			push r6
 			push r7
 			push r5
-			call mult32s	
+			call mul16
 			pop r5
 			pop r7
 			pop r6
-			copy r4 r3
+			copy r4 r2
 			sub r0 r8 r10
 			sub r1 r7 r11
 			push r6
 			push r7 
 			push r5
 			push r4
-			call mult32s
+			call mul16
 			pop r4
 			pop r5
 			pop r7
 			pop r6
-			sub r4 r4 r3
+			sub r4 r4 r2
 			print r4
 			or r5 r5 r4
 
@@ -201,23 +315,23 @@ filltri:
 			push r6
 			push r7
 			push r5
-			call mult32s	
+			call mul16
 			pop r5
 			pop r7
 			pop r6
-			copy r4 r3
+			copy r4 r2
 			sub r0 r10 r8
 			sub r1 r7 r9
 			push r6
 			push r7 
 			push r5
 			push r4
-			call mult32s
+			call mul16
 			pop r4
 			pop r5
 			pop r7
 			pop r6
-			sub r4 r4 r3
+			sub r4 r4 r2
 			print r4
 			or r5 r5 r4
 
@@ -230,7 +344,7 @@ filltri:
 			push r7
 			copy r0 r6
 			copy r1 r7
-			letl r0 50
+			letl r0 -1
 			call plotpx
 			pop r7
 			pop r6
@@ -427,4 +541,52 @@ edges:
 	
 	.word 6	
 	.word 7
+triangles:
+	.word 0
+	.word 1
+	.word 3
+
+	.word 1
+	.word 2
+	.word 3
+
+	.word 2
+	.word 5
+	.word 6
+
+	.word 6
+	.word 3
+	.word 2
+
+	.word 6
+	.word 7
+	.word 0
+
+	.word 0
+	.word 3
+	.word 6
+
+	.word 2
+	.word 1
+	.word 4
+
+	.word 4
+	.word 5
+	.word 2
+
+	.word 5
+	.word 4
+	.word 7
+
+	.word 7
+	.word 6
+	.word 5
+
+	.word 0
+	.word 7
+	.word 4
+
+	.word 4
+	.word 1
+	.word 0
 stack:
