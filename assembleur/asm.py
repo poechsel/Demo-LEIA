@@ -322,6 +322,29 @@ class Pop(_Instruction):
     def parse(self, env):
         return [self.addThing(0b1111, 12) + self.addThing(0b1000, 4) + self.addThing(self.read_register(self.words[1], False), 0)]
 
+class CustomPush(_Instruction):
+    """
+    pop instruction
+    syntax: pop register -> pop the top of the stack in register
+    """
+    def __init__(self, *args):
+        super(CustomPush, self).__init__(*args)
+        self.args_nb = 1
+        self.jump_line = 2
+    
+    def parse(self, env):
+        return Wmem(["wmem", self.words[1], "[r7]"], "", "", "").parse(env) + Add(["add", "r7", "r7", "1"], "", "", "").parse(env)
+
+class CustomPop(_Instruction):
+    def __init__(self, *args):
+        super(CustomPop, self).__init__(*args)
+        self.args_nb = 1
+        self.jump_line = 2
+    
+    def parse(self, env):
+        print (Sub(["sub", "r7", "r7", "1"], "", "", "").parse(env) + Rmem(["rmem", self.words[1], "[r7]"], "", "", "").parse(env))
+        return Sub(["sub", "r7", "r7", "1"], "", "", "").parse(env) + Rmem(["rmem", self.words[1], "[r7]"], "", "", "").parse(env)
+
 
 class Letl(_Instruction):
     """

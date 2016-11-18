@@ -80,21 +80,17 @@ putstr:
 
 .align16
 putchar:
-	;letl r4 0xff
-	;leth r4 0x4f
-	;add r2 r2 1
-	;lsl r6 r2 7
-	;sub r4 r4 r6
-	;lsl r6 r2 5 
-	;sub r4 r4 r6
-	;add r4 r4 r1
-add r2 r2 1
-lsl r4 r2 7
-lsl r2 r2 5
-add r4 r4 r2
-letl r2 0
-sub r2 r2 r4
-add r4 r2 r1
+	;r4->screen ptr
+	;r2->y
+	;r0->col
+	;r1->x
+	add r2 r2 1
+	lsl r4 r2 7
+	lsl r2 r2 5
+	add r4 r4 r2
+	letl r2 0
+	sub r2 r2 r4
+	add r4 r2 r1
 
 	.set r5 font
 	;sub r5 r5 1
@@ -109,39 +105,43 @@ add r4 r2 r1
 	letl r1 4
 	letl r2 7
 
+	.let r6 1280	
 	sub r4 r4 r6
-	sub r4 r4 r6
-	sub r4 r4 r6
-	sub r4 r4 r6
-	sub r4 r4 r6
-	sub r4 r4 r6
-	sub r4 r4 r6
-	sub r4 r4 r6
+	;sub r4 r4 r6
+	;sub r4 r4 r6
+	;sub r4 r4 r6
+	;sub r4 r4 r6
+	;sub r4 r4 r6
+	;sub r4 r4 r6
+	;sub r4 r4 r6
+	;sub r4 r4 r6
 	__putchar_loopy:
 		rmem r3 [r5]
 		letl r2 8 
 		add r4 r4 8
 		__putchar_loopx:
-			and r7 r3 1
-			snif r7 neq 1
+			and r6 r3 1
+			snif r6 neq 1
 				wmem r0 [r4]
 			sub r4 r4 1
 			lsr r3 r3 1
 			sub r2 r2 1
 			snif r2 eq 0
 				jump __putchar_loopx
+		.let r6 160
 		add r4 r4 r6
 		letl r2 8
 		add r4 r4 8
 		__putchar_loopx2:
-			and r7 r3 1
-			snif r7 neq 1
+			and r6 r3 1
+			snif r6 neq 1
 				wmem r0 [r4]
 			sub r4 r4 1
 			lsr r3 r3 1
 			sub r2 r2 1
 			snif r2 eq 0
 				jump __putchar_loopx2
+		.let r6 160
 		add r4 r4 r6
 		add r5 r5 1
 		sub r1 r1 1

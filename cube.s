@@ -1,11 +1,12 @@
 letl r0 0
 call clearscr
 refresh
+
 letl r0 0xFF
 leth r0 0xFF
 
 .set r14 stack
-
+.set r7 stack
 
 letl r0 20
 letl r1 20
@@ -14,166 +15,172 @@ letl r3 0
 letl r4 70
 letl r5 50
 
-call filltri2
+.let r0 0xffff
+.let r1 0
+.let r2 0
+.let r3 50
+.let r4 50
+call line
+refresh
+
+;call filltri2
 
 ;jump 0
 
-letl r6 0x67
-leth r6 0x1
+.let r6 359
 loop:
 	.set r13 points
-	.set r7 points
+	.set r3 points
 	.set r5 transformed_points
-	add r7 r7 12 
-	add r7 r7 12 
+	add r3 r3 12 
+	add r3 r3 12 
 	add r5 r5 8
 	add r5 r5 8
 	letl r0 0
 	call clearscr
 	verts_loop:
-		sub r7 r7 1
-		rmem r2 [r7] 
-		sub r7 r7 1
-		rmem r1 [r7] 
-		sub r7 r7 1
-		rmem r0 [r7] 
-		push r5
-		push r7
-		push r13
-		push r6
+		sub r3 r3 1
+		rmem r2 [r3] 
+		sub r3 r3 1
+		rmem r1 [r3] 
+		sub r3 r3 1
+		rmem r0 [r3] 
+		.push r6
+		.push r5
+		.push r3
+		.push r13
+		.push r6
 
-		push r2
+		.push r2
 		copy r2 r6
 		call rotation ;rotate on axis z
-		pop r2
+		.pop r2
 
-		pop r6
-		push r6
+		.pop r6
+		.push r6
 		
-		push r1
+		.push r1
 		copy r1 r2
 		copy r2 r6
 		call rotation
 		copy r2 r1
-		pop r1
-
+		.pop r1
 		call projection
-
 		copy r2 r1
 		copy r1 r0
 		letl r0 0xFF
-		pop r6
-		push r1
-		push r2
-		;call plotpx
-		pop r2
-		pop r1
-		pop r13
-		pop r7
-		pop r5
+		.pop r6
+		.push r1
+		.push r2
+		call plotpx
+		.pop r2
+		.pop r1
+		.pop r13
+		.pop r3
+		.pop r5
 
 		sub r5 r5 1
 		wmem r2 [r5]
 		sub r5 r5 1
 		wmem r1 [r5]
-		
-		snif r7 eq r13
+		snif r3 eq r13
 			jump verts_loop
-
-	.set r7 edges
+	.set r5 edges
 	.set r13 edges
-	add r7 r7 12
-	add r7 r7 12
+	add r5 r5 12
+	add r5 r5 12
 	print "new loop"
 	edges_loop:
-		sub r7 r7 1
-		rmem r10 [r7]
-		sub r7 r7 1
-		rmem r11 [r7]
+		sub r5 r5 1
+		rmem r10 [r5]
+		sub r5 r5 1
+		rmem r11 [r5]
 		print "current"
-		print r7
+		print r5
 		print r10
 		print r11
-		push r7
+		.push r5
 		.set r12 transformed_points
-		copy r7 r10
-		lsl r7 r7 1
-		add r7 r7 r12
-		copy r10 r7
+		copy r5 r10
+		lsl r5 r5 1
+		add r5 r5 r12
+		copy r10 r5
 
-		copy r7 r11
-		lsl r7 r7 1
-		add r7 r7 r12
-		copy r11 r7
+		copy r5 r11
+		lsl r5 r5 1
+		add r5 r5 r12
+		copy r11 r5
 
 		rmem r1 [r10]
-		copy r7 r10
-		add r7 r7 1
-		copy r10 r7
+		copy r5 r10
+		add r5 r5 1
+		copy r10 r5
 		rmem r2 [r10]
 		rmem r3 [r11]
-		copy r7 r11
-		add r7 r7 1
-		copy r11 r7
+		copy r5 r11
+		add r5 r5 1
+		copy r11 r5
 		rmem r4 [r11]
 		letl r0 0xff
-		push r15
-		push r6
+		.push r15
+		.push r6
 		call line
-		pop r6
-		pop r15
-		pop r7
+		.pop r6
+		.pop r15
+		.pop r5
 
-		snif r7 eq r13
+		snif r5 eq r13
 			jump edges_loop
-	.set r7 triangles
-	add r7 r7 12
-	add r7 r7 12
-	add r7 r7 12
-	.set r13 triangles
-	push r6
-	faces_loop:
-		sub r7 r7 1
-		rmem r9 [r7]
-		sub r7 r7 1
-		rmem r10 [r7]
-		sub r7 r7 1
-		rmem r11 [r7]
-		push r7
-		.set r12 transformed_points
-		copy r7 r9
-		lsl r7 r7 1
-		add r7 r7 r12
-		rmem r1 [r7]
-		add r7 r7 1
-		rmem r2 [r7]
-		
-		copy r7 r10
-		lsl r7 r7 1
-		add r7 r7 r12
-		rmem r3 [r7]
-		add r7 r7 1
-		rmem r4 [r7]
-		
-		copy r7 r11
-		lsl r7 r7 1
-		add r7 r7 r12
-		rmem r5 [r7]
-		add r7 r7 1
-		rmem r6 [r7]
-		
-		push r13
-		.let r0 0x0008
-		
-		call filltri2
-
-		pop r13
-		pop r7
-		snif r7 eq r13
-			jump faces_loop
 
 
-	pop r6	
+;	.set r7 triangles
+;	add r7 r7 12
+;	add r7 r7 12
+;	add r7 r7 12
+;	.set r13 triangles
+;	.push r6
+;	faces_loop:
+;		sub r7 r7 1
+;		rmem r9 [r7]
+;		sub r7 r7 1
+;		rmem r10 [r7]
+;		sub r7 r7 1
+;		rmem r11 [r7]
+;		.push r7
+;		.set r12 transformed_points
+;		copy r7 r9
+;		lsl r7 r7 1
+;		add r7 r7 r12
+;		rmem r1 [r7]
+;		add r7 r7 1
+;		rmem r2 [r7]
+;		
+;		copy r7 r10
+;		lsl r7 r7 1
+;		add r7 r7 r12
+;		rmem r3 [r7]
+;		add r7 r7 1
+;		rmem r4 [r7]
+;		
+;		copy r7 r11
+;		lsl r7 r7 1
+;		add r7 r7 r12
+;		rmem r5 [r7]
+;		add r7 r7 1
+;		rmem r6 [r7]
+;		
+;		.push r13
+;		.let r0 0x0008
+;		
+;		call filltri2
+;
+;		.pop r13
+;		.pop r7
+;		snif r7 eq r13
+;			jump faces_loop
+
+
+	.pop r6	
 	refresh
 	sub r6 r6 1
 	snif r6 eq 0
@@ -182,7 +189,7 @@ jump 0
 
 .align16
 filltri2:
-	push r15
+	.push r15
 
 	copy r13 r6
 	copy r12 r5
@@ -195,11 +202,11 @@ filltri2:
 	__filltri2_loopy:
 		.let r6 160
 		__filltri2_loopx:
-			push r0
+			.push r0
 			copy r1 r6
 			copy r2 r7
-			push r6 
-			push r7
+			.push r6 
+			.push r7
 
 			copy r0 r10
 			copy r1 r11
@@ -209,11 +216,11 @@ filltri2:
 			copy r5 r7
 			call orientpointtri
 			
-			pop r7
-			pop r6
-			push r7
-			push r6
-			push r0
+			.pop r7
+			.pop r6
+			.push r7
+			.push r6
+			.push r0
 
 			copy r0 r12
 			copy r1 r13
@@ -222,13 +229,13 @@ filltri2:
 			copy r4 r6
 			copy r5 r7
 			call orientpointtri
-			pop r5
-			pop r6
-			pop r7
+			.pop r5
+			.pop r6
+			.pop r7
 			add r5 r5 r0
-			push r7
-			push r6 
-			push r5
+			.push r7
+			.push r6 
+			.push r5
 			
 			copy r0 r8
 			copy r1 r9
@@ -237,15 +244,15 @@ filltri2:
 			copy r4 r6
 			copy r5 r7
 			call orientpointtri
-			pop r5
-			pop r6
-			pop r7
+			.pop r5
+			.pop r6
+			.pop r7
 			add r5 r5 r0
 
 			.let r0 0xff00
 			copy r1 r6
 			copy r2 r7
-			pop r0
+			.pop r0
 			snif r5 neq 0
 				call plotpx
 			sub r6 r6 1
@@ -256,33 +263,33 @@ filltri2:
 			jump __filltri2_loopy
 	
 	refresh
-	pop r15
+	.pop r15
 	return
 
 .align16
 orientpointtri:
 	;;param: r0, r1, r2, r3, r4, r5 the coordinates (r0 is A, r1 is B and r2 the current pt (or C here)
-	push r15
+	.push r15
 	sub r5 r5 r1 ; <- r5 = C.y - A.y
 	sub r2 r2 r0 ; <- r2 = B.x - A.x
 	sub r3 r3 r1 ; <- r3 = B.y - A.y
 	sub r4 r4 r0 ; <- r4 = C.x - A.x
-	push r3
-	push r4
+	.push r3
+	.push r4
 	copy r0 r2
 	copy r1 r5
 	call mul16
 	copy r0 r2
-	pop r4
-	pop r3
-	push r0
+	.pop r4
+	.pop r3
+	.push r0
 	copy r0 r3
 	copy r1 r4
 	call mul16
-	pop r0
+	.pop r0
 	sub r0 r0 r2
 	lsr r0 r0 15
-	pop r15
+	.pop r15
 	return
 
 
@@ -292,7 +299,7 @@ rotation:
 	;;r1 <- y
 	;;r2 <- theta (in degre)
 	;;we compute x' = x * cos(t)-y*sin(t) and y' = x*sin(t)+y*cos(t)
-	push r15
+	.push r15
 	.set r4 lut_cos
 	add r4 r4 r2
 	rmem r12 [r4] ;;r12 is cos(t)
@@ -308,38 +315,38 @@ rotation:
 	copy r0 r10
 	copy r1 r12
 	call multfloat
-	push r0		;; x * cos(t)
+	.push r0		;; x * cos(t)
 	
 	copy r0 r10
 	copy r1 r13
 	call multfloat
-	push r0		;; x * sin(t)
+	.push r0		;; x * sin(t)
 
 	copy r0 r11
 	copy r1 r12
 	call multfloat
-	push r0		;; y * cos(t)
+	.push r0		;; y * cos(t)
 
 	copy r0 r11
 	copy r1 r13
 	call multfloat
-	push r0		;; y * sin(t)
+	.push r0		;; y * sin(t)
 
-	pop r5
-	pop r1
-	pop r4
-	pop r0
+	.pop r5
+	.pop r1
+	.pop r4
+	.pop r0
 
 	sub r0 r0 r5
 	add r1 r1 r4
-	pop r15
+	.pop r15
 	return
 
 .align16
 projection:
 	;; project the point (r0; r1; r2) <- the coordinates are in the range [-1, 1]
 	;; return the coordinates in (r0, r1)
-	push r15
+	.push r15
 	letl r6 5
 	lsl r6 r6 7
 
@@ -350,11 +357,11 @@ projection:
 	lsl r0 r0 4
 	lsl r1 r1 4
 	
-	push r1
+	.push r1
 	copy r1 r6
 	call divs
 	copy r8 r2
-	pop r0
+	.pop r0
 
 	copy r1 r6
 	call divs
@@ -366,7 +373,7 @@ projection:
 	letl r6 80
 	leth r6 0
 	add r0 r0 r6
-	pop r15
+	.pop r15
 	return
 ;.set r4 lut_cos
 	;add r4 r4 r7

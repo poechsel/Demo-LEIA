@@ -9,19 +9,19 @@ line:
 	;r5 -> memory
 
 
-	letl r7 0x5f
-	leth r7 0xff
+	letl r5 0x5f
+	leth r5 0xff
 	;sub r2 r2 1 <- commented for a fix
 	add r4 r4 1 ;<- also in the fix
 	
 	lsl r6 r2 7
-	sub r7 r7 r6
+	sub r5 r5 r6
 	lsl r6 r2 5
-	sub r7 r7 r6
-	add r7 r7 r1
+	sub r5 r5 r6
+	add r5 r5 r1
 	add r2 r2 1
-
-
+	print r5
+	.push r5
 
 	snif r3 ge r1   ;si x2 >= x1
 		jump __line_ifr3ger1
@@ -63,19 +63,20 @@ line:
 	add r3 r3 r2	;e = 2dy - dx
 
 
-
+	copy r8 r2
+	.pop r2
 	letl r4 -2
 	__line_loop:
-		wmem r0 [r7]
+		wmem r0 [r2]
 		snif r3 slt 0    ;e < 0
 			jump __line_branch
 		jump __line_branch_default
 		__line_branch:
 			sub r3 r3 r1
-			add r7 r7 r6
+			add r2 r2 r6
 		__line_branch_default:
-			add r3 r3 r2
-			add r7 r7 r5
+			add r3 r3 r8
+			add r2 r2 r5
 		add r4 r4 2
 		snif r4 eq r1
 			jump __line_loop

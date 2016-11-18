@@ -168,20 +168,20 @@ mult32s:
 	;; r7 will hold if we must invert the end result
 	;; (we can also see that in fact r4 could hold the information of r7:  r4 will always contain a number between 0 and 16 therefore the high semi-word will always be equal to 0 and  r7 is 0 on 1: it could fit on the high semi-word of r4
 	;; I prefer the version with inversion rather than a version without it: invertng a value is quick and not so long to write
-	xor r7 r7 r7
+	xor r4 r4 r4
 	snif r0 slt 0
 		jump __mult32s_r1s
-	xor r7 r7 1
+	xor r4 r4 1
 	xor r0 r0 -1
 	add r0 r0 1
 	__mult32s_r1s:
 	snif r1 slt 0
 		jump __mult32s_begin
-	xor r7 r7 1
+	xor r4 r4 1
 	xor r1 r1 -1
 	add r1 r1 1
 	__mult32s_begin:
-
+	.push r4
 	;; normal 32bit product
 	xor r2 r2 r2
 	xor r3 r3 r3
@@ -206,7 +206,8 @@ mult32s:
 			jump __mult32s_loop
 
 	;; if we must invert, then invert, otherwise stop
-	snif r7 eq 1
+	.pop r4
+	snif r4 eq 1
 		return
 	xor r2 r2 -1
 	xor r3 r3 -1
@@ -229,20 +230,20 @@ multfloat:
 	;; r7 will hold if we must invert the end result
 	;; (we can also see that in fact r4 could hold the information of r7:  r4 will always contain a number between 0 and 16 therefore the high semi-word will always be equal to 0 and  r7 is 0 on 1: it could fit on the high semi-word of r4
 	;; I prefer the version with inversion rather than a version without it: invertng a value is quick and not so long to write
-	xor r7 r7 r7
+	xor r4 r4 r4
 	snif r0 slt 0
 		jump __multfloat_r1s
-	xor r7 r7 1
+	xor r4 r4 1
 	xor r0 r0 -1
 	add r0 r0 1
 	__multfloat_r1s:
 	snif r1 slt 0
 		jump __multfloat_begin
-	xor r7 r7 1
+	xor r4 r4 1
 	xor r1 r1 -1
 	add r1 r1 1
 	__multfloat_begin:
-
+	.push r4
 	;; normal 32bit product
 	xor r2 r2 r2
 	xor r3 r3 r3
@@ -267,7 +268,8 @@ multfloat:
 			jump __multfloat_loop
 
 	;; if we must invert, then invert, otherwise stop
-	snif r7 eq 1
+	.pop r4
+	snif r4 eq 1
 		jump __multfloat_end
 	xor r2 r2 -1
 	xor r3 r3 -1
