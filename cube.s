@@ -23,9 +23,9 @@ letl r5 50
 call line
 refresh
 
-;call filltri2
+call filltri2
 
-;jump 0
+jump 0
 
 .let r6 359
 loop:

@@ -22,29 +22,24 @@ loop_x:
 		copy r12 r2
 		xor r4 r4 r4 ;an
 		xor r5 r5 r5 ;bn
-		letl r6 31	 ;max nb of iter
-		leth r6 0
+		.let r6 31	 ;max nb of iter
 		loop_iter:
 			.push r6
 			copy r11 r5
 			copy r10 r4
-			xor r4 r4 r4
-			xor r5 r5 r5
 			.push r4
-			.push r5
 			copy r0 r10
 			copy r1 r10
 			call multfloat
-			.pop r5
 			.pop r4
-			add r4 r4 r0
+			copy r8 r0
+			add r4 r0 0
 			.push r4
-			.push r5
 			copy r0 r11
 			copy r1 r11
 			call multfloat
-			.pop r5
 			.pop r4
+			copy r9 r0
 			sub r4 r4 r0
 			add r4 r4 r12 ;done with an
 
@@ -55,44 +50,23 @@ loop_x:
 			call multfloat
 			.pop r5
 			.pop r4
+			add r5 r0 0
 			add r5 r5 r0
-			add r5 r5 r0
-			;lsl r5 r5 1
 			add r5 r5 r13 ;done with bn
 
 			;now compute the norm
-			.push r4 
-			.push r5
-			copy r0 r4
-			copy r1 r4
-			call multfloat
-			.pop r5
-			.pop r4
-			add r6 r0 0
+			add r6 r9 0
 
-			.push r4
-			.push r5
-			.push r6
-			copy r0 r5
-			copy r1 r5
-			call multfloat
-			.pop r6
-			.pop r5
-			.pop r4
-			add r6 r6 r0
-			.let r14 0x0400
-			snif r6 gt r14
+			add r6 r6 r8
+			.let r8 0x0400
+			snif r6 gt r8
 				jump iter_end
 
 			letl r0 0xff
-			;xor r0 r0 r0
-			;copy r0 r6
-			;lsl r0 r0 7
 			.pop r6
 						
 			xor r0 r0 r0
 			copy r0 r6
-			print r0
 			lsl r0 r0 2
 			.pop r2
 			.pop r1
