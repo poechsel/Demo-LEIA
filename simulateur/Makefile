@@ -1,6 +1,6 @@
 CFLAGS = -Wall -O2 -std=c++11
 LDFLAGS = -lSDL2 -lpthread
-EXEC = simulateur
+EXEC = simu
 SRC = $(wildcard *.cpp)
 OBJS = $(SRC:.cpp=.o)
  
@@ -26,3 +26,6 @@ clean :
 	@rm *.o
 cleaner : clean
 	@rm $(EXEC)
+
+install:
+	INSTALL $(EXEC) /usr/bin/
