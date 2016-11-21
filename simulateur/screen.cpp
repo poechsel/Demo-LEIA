@@ -43,8 +43,8 @@ void simulate_screen(const Machine& machine, bool &force_quit, volatile bool &re
 			SDL_RenderPresent(renderer);
 			/* wait */
 			Uint32 current = SDL_GetTicks();
-			if (current - last_time < (1000.f * 1.f/30.f)) {
-				SDL_Delay((1000.f * 1.f / 30.f) - last_time + current);
+			if (current - last_time < (1000.f * 1.f/60.f)) {
+				SDL_Delay((1000.f * 1.f / 60.f) - last_time + current);
 			}
 			refr = false;
 			last_time = current;

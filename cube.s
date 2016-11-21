@@ -1,6 +1,6 @@
 letl r0 0
 call clearscr
-refresh
+;refresh
 
 letl r0 0xFF
 leth r0 0xFF
@@ -18,7 +18,7 @@ letl r6 50
 
 
 call filltri
-refresh
+;refresh
 ;jump 0
 
 
@@ -132,7 +132,7 @@ loop:
 		sub r5 r5 1
 		snif r5 eq 0
 			jump verts_loop
-	.let r5 16
+	.let r5 12
 	normals_loop:
 		.set r3 normals
 		add r3 r3 r5
@@ -155,13 +155,14 @@ loop:
 		.pop r6
 		.push r6
 	
+		.push r1
 		copy r1 r2
 		copy r2 r6
 		call rotation
 		copy r2 r1
+		.pop r1
 		.pop r6
 		.pop r5
-
 		.set r3 transformed_normals
 		add r3 r3 r5
 		sub r3 r3 1
@@ -171,11 +172,75 @@ loop:
 			jump normals_loop
 
 
+
+	.push r6
+
+	.let r6 12
+	faces_loop:
+		;test the normal
+		.set r5 transformed_normals
+		add r5 r5 r6
+		sub r5 r5 1
+		rmem r1 [r5]
+		.let r0 0xfc00
+		lsl r2 r1 7
+		and r0 r0 r2
+		lsr r1 r1 15
+		snif r1 eq 1
+			jump faces_end
+		.push r6
+		.set r5 triangles
+		add r5 r5 r6
+		add r5 r5 r6
+		add r6 r5 r6
+		sub r6 r6 1
+		rmem r9 [r6]
+		sub r6 r6 1
+		rmem r10 [r6]
+		sub r6 r6 1
+		rmem r11 [r6]
+		.pop r6
+		.push r6
+		.set r12 transformed_points
+		copy r6 r9
+		lsl r6 r6 1
+		add r6 r6 r12
+		rmem r1 [r6]
+		add r6 r6 1
+		rmem r2 [r6]
+		
+		copy r6 r10
+		lsl r6 r6 1
+		add r6 r6 r12
+		rmem r3 [r6]
+		add r6 r6 1
+		rmem r4 [r6]
+		
+		copy r6 r11
+		lsl r6 r6 1
+		add r6 r6 r12
+		rmem r5 [r6]
+		add r6 r6 1
+		.push r6
+		rmem r6 [r6]
+		
+		.push r13
+		;.let r0 0x0008
+		
+		
+		call filltri
+		.pop r13
+		.pop r6
+		.pop r6
+		faces_end:
+		sub r6 r6 1
+		snif r6 eq 0
+			jump faces_loop
+
 	.set r5 edges
 	.set r13 edges
 	add r5 r5 12
 	add r5 r5 12
-	.push r6
 	edges_loop:
 		sub r5 r5 1
 		rmem r10 [r5]
@@ -211,57 +276,11 @@ loop:
 
 		snif r5 eq r13
 			jump edges_loop
-	.set r6 triangles
-	add r6 r6 12
-	add r6 r6 12
-	add r6 r6 12
-	.set r13 triangles
-	faces_loop:
-		sub r6 r6 1
-		rmem r9 [r6]
-		sub r6 r6 1
-		rmem r10 [r6]
-		sub r6 r6 1
-		rmem r11 [r6]
-		.push r6
-		.set r12 transformed_points
-		copy r6 r9
-		lsl r6 r6 1
-		add r6 r6 r12
-		rmem r1 [r6]
-		add r6 r6 1
-		rmem r2 [r6]
-		
-		copy r6 r10
-		lsl r6 r6 1
-		add r6 r6 r12
-		rmem r3 [r6]
-		add r6 r6 1
-		rmem r4 [r6]
-		
-		copy r6 r11
-		lsl r6 r6 1
-		add r6 r6 r12
-		rmem r5 [r6]
-		add r6 r6 1
-		.push r6
-		rmem r6 [r6]
-		
-		.push r13
-		.let r0 0x0008
-		
-		call filltri
-		.pop r13
-		.pop r6
-		.pop r6
-		snif r6 eq r13
-			jump faces_loop
-
 
 	.pop r6	
 	refresh
 	sub r6 r6 1
-	snif r6 eq 0
+	snif r6 slt 0
 		jump loop
 jump 0
 
@@ -270,7 +289,6 @@ jump 0
 filltri:
 	.push r15
 
-	;;compute the window
 	;todo
 	.push r0
 
@@ -353,6 +371,7 @@ filltri:
 	.pop r0
 	.let r2 0
 	;now we need to go through the screen
+	.let r15 0xaf60
 	__filltri_loopy:
 		.let r1 0
 		.push r4
@@ -366,8 +385,12 @@ filltri:
 			or r3 r3 r6
 			lsr r3 r3 15
 			;.let r0 465
+			
 			snif r3 eq 1
-				call plotpx
+				wmem r0 [r15]
+				;call plotpx
+			add r1 r15 1
+			copy r15 r1
 			.pop r2
 			.pop r1
 
@@ -393,112 +416,6 @@ filltri:
 	return
 
 
-.align16
-filltri2:
-	.push r15
-
-	copy r13 r6
-	copy r12 r5
-	copy r11 r4
-	copy r10 r3
-	copy r9 r2
-	copy r8 r1
-	;;r6 <- color
-	.let r14 128
-	__filltri2_loopy:
-		.let r6 160
-		__filltri2_loopx:
-			.push r0
-			copy r1 r6
-			copy r2 r14
-			.push r6 
-			.push r14
-
-			copy r0 r10
-			copy r1 r11
-			copy r2 r12
-			copy r3 r13
-			copy r4 r6
-			copy r5 r14
-			call orientpointtri
-			
-			.pop r14
-			.pop r6
-			.push r14
-			.push r6
-			.push r0
-
-			copy r0 r12
-			copy r1 r13
-			copy r2 r8
-			copy r3 r9
-			copy r4 r6
-			copy r5 r14
-			call orientpointtri
-			.pop r5
-			.pop r6
-			.pop r14
-			add r5 r5 r0
-			.push r14
-			.push r6 
-			.push r5
-			
-			copy r0 r8
-			copy r1 r9
-			copy r2 r10
-			copy r3 r11
-			copy r4 r6
-			copy r5 r14
-			call orientpointtri
-			.pop r5
-			.pop r6
-			.pop r14
-			add r5 r5 r0
-
-			.let r0 0xff00
-			copy r1 r6
-			copy r2 r14
-			.pop r0
-			snif r5 neq 0
-				call plotpx
-			sub r6 r6 1
-			snif r6 eq -1
-				jump __filltri2_loopx
-		add r5 r14 0
-		sub r5 r5 1
-		copy r14 r5
-		snif r5 eq -1
-			jump __filltri2_loopy
-	
-	refresh
-	.pop r15
-	return
-
-.align16
-orientpointtri:
-	;;param: r0, r1, r2, r3, r4, r5 the coordinates (r0 is A, r1 is B and r2 the current pt (or C here)
-	.push r15
-	sub r5 r5 r1 ; <- r5 = C.y - A.y
-	sub r2 r2 r0 ; <- r2 = B.x - A.x
-	sub r3 r3 r1 ; <- r3 = B.y - A.y
-	sub r4 r4 r0 ; <- r4 = C.x - A.x
-	.push r3
-	.push r4
-	copy r0 r2
-	copy r1 r5
-	call mul16
-	copy r0 r2
-	.pop r4
-	.pop r3
-	.push r0
-	copy r0 r3
-	copy r1 r4
-	call mul16
-	.pop r0
-	sub r0 r0 r2
-	lsr r0 r0 15
-	.pop r15
-	return
 
 
 .align16
@@ -562,11 +479,8 @@ projection:
 	return
 
 	.push r15
-	letl r6 4
+	letl r6 5
 	lsl r6 r6 7
-	sub r6 r6 15
-	sub r6 r6 15
-	sub r6 r6 15
 
 	add r2 r2 r6
 	add r2 r2 1
@@ -693,10 +607,10 @@ edges:
 normals:
 	.word 0x0000
 	.word 0x0000
-	.word 0xFF00
+	.word 0x0100
 	.word 0x0000
 	.word 0x0000
-	.word 0xFF00
+	.word 0x0100
 
 	.word 0x0000
 	.word 0x0100
@@ -721,10 +635,10 @@ normals:
 
 	.word 0x0000
 	.word 0x0000
-	.word 0x0100
+	.word 0xFF00
 	.word 0x0000
 	.word 0x0000
-	.word 0x0100
+	.word 0xFF00
 
 	.word 0x0000
 	.word 0xFF00
@@ -733,53 +647,99 @@ normals:
 	.word 0xFF00
 	.word 0x0000
 transformed_normals:
-	.reserve 16
+	.reserve 12
+
 triangles:
+	.word 3
+	.word 1
 	.word 0
-	.word 1
 	.word 3
-
+	.word 2
 	.word 1
-	.word 2
-	.word 3
 
-	.word 2
+	.word 6
 	.word 5
-	.word 6
-
-	.word 6
-	.word 3
 	.word 2
-
-	.word 6
-	.word 7
-	.word 0
-
-	.word 0
+	.word 2
 	.word 3
 	.word 6
 
-	.word 2
-	.word 1
-	.word 4
-
-	.word 4
-	.word 5
-	.word 2
-
-	.word 5
-	.word 4
-	.word 7
-
+	.word 0
 	.word 7
 	.word 6
-	.word 5
-
+	.word 6
+	.word 3
 	.word 0
-	.word 7
-	.word 4
 
 	.word 4
 	.word 1
+	.word 2
+	.word 2
+	.word 5
+	.word 4
+
+	.word 7
+	.word 4
+	.word 5
+	.word 5
+	.word 6
+	.word 7
+
+	.word 4
+	.word 7
 	.word 0
+	.word 0
+	.word 1
+	.word 4
+
+
+
+;triangles:
+;	.word 0
+;	.word 1
+;	.word 3
+;
+;	.word 1
+;	.word 2
+;	.word 3
+;
+;	.word 2
+;	.word 5
+;	.word 6
+;
+;	.word 6
+;	.word 3
+;	.word 2
+;
+;	.word 6
+;	.word 7
+;	.word 0
+;
+;	.word 0
+;	.word 3
+;	.word 6
+;
+;	.word 2
+;	.word 1
+;	.word 4
+;
+;	.word 4
+;	.word 5
+;	.word 2
+;
+;	.word 5
+;	.word 4
+;	.word 7
+;
+;	.word 7
+;	.word 6
+;	.word 5
+;
+;	.word 0
+;	.word 7
+;	.word 4
+;
+;	.word 4
+;	.word 1
+;	.word 0
 stack:
