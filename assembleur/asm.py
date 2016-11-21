@@ -201,17 +201,14 @@ class Print(_Instruction):
         self.jump_line = len(self.words[1]) - 1
         if self.words[1][0] == 'r':
             self.jump_line = 1
-        print(self.words)
         self.args_nb = 1
     def parse(self, env):
-        print('test', self.words)
         if self.words[1][0] == 'r':
             return [self.addThing(0b1110, 12) + self.addThing(1, 10) + self.addThing(self.read_register(self.words[1]), 0)]
         else:
             o = []
             for c in self.words[1][1:-1]:
                 o += [self.addThing(0b1110, 12) + self.addThing(2, 10) + self.addThing(ord(c), 0)]
-            print("fail", o)
             return o + [self.addThing(0b1110, 12) + self.addThing(2, 10) + self.addThing(ord('\n'), 0)]
 
 class CustomString(_Instruction):
@@ -342,7 +339,6 @@ class CustomPop(_Instruction):
         self.jump_line = 2
     
     def parse(self, env):
-        print (Sub(["sub", "r7", "r7", "1"], "", "", "").parse(env) + Rmem(["rmem", self.words[1], "[r7]"], "", "", "").parse(env))
         return Sub(["sub", "r7", "r7", "1"], "", "", "").parse(env) + Rmem(["rmem", self.words[1], "[r7]"], "", "", "").parse(env)
 
 
@@ -581,14 +577,13 @@ class _Environment:
         for name, obj in inspect.getmembers(sys.modules[__name__]):
             if inspect.isclass(obj) and "_" != name[0]:
                 self.instr_set[name.lower().replace("custom", ".")] = obj
-        print(self.instr_set)
     
 
 def load_file(file_path):
     """ 
     read a file and return the list of lines as words
     """
-    print(file_path)
+    print("assembling", file_path)
     with open(file_path) as file:
         #we remove blank chars from the begin and end of the string
         #then lower the string to avoid ambiguities
