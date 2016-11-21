@@ -184,9 +184,7 @@ filltri:
 	.push r15
 
 	;;compute the window
-	
-
-
+	;todo
 	.push r0
 
 	;; compute the increments
@@ -259,6 +257,7 @@ filltri:
 	copy r0 r13
 	call mul16
 	.pop r0
+
 	sub r6 r2 r0
 	.pop r5
 	.pop r4
@@ -594,6 +593,48 @@ edges:
 	
 	.word 6	
 	.word 7
+normals:
+	.word 0x0000
+	.word 0x0000
+	.word 0xFF00
+	.word 0x0000
+	.word 0x0000
+	.word 0xFF00
+
+	.word 0x0000
+	.word 0x0100
+	.word 0x0000
+	.word 0x0000
+	.word 0x0100
+	.word 0x0000
+
+	.word 0x0100
+	.word 0x0000
+	.word 0x0000
+	.word 0x0100
+	.word 0x0000
+	.word 0x0000
+
+	.word 0xFF00
+	.word 0x0000
+	.word 0x0000
+	.word 0xFF00
+	.word 0x0000
+	.word 0x0000
+
+	.word 0x0000
+	.word 0x0000
+	.word 0x0100
+	.word 0x0000
+	.word 0x0000
+	.word 0x0100
+
+	.word 0x0000
+	.word 0xFF00
+	.word 0x0000
+	.word 0x0000
+	.word 0xFF00
+	.word 0x0000
 triangles:
 	.word 0
 	.word 1
