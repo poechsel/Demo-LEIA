@@ -18,6 +18,7 @@ mul16:
 		lsl r1 r1 1
 		snif r0 eq 0
 			jump __mul16_loop
+	
 	return
 	
 .align16
