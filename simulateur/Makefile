@@ -27,5 +27,3 @@ clean :
 cleaner : clean
 	@rm $(EXEC)
 
-install:
-	INSTALL $(EXEC) /usr/bin/
