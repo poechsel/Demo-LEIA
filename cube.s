@@ -24,26 +24,76 @@ refresh
 
 .let r6 359
 loop:
-	.set r13 points
-	.set r3 points
-	.set r5 transformed_points
-	add r3 r3 12 
-	add r3 r3 12 
-	add r5 r5 8
-	add r5 r5 8
 	letl r0 0
 	call clearscr
+;	.set r13 points
+;	.set r3 points
+;	.set r5 transformed_points
+;	add r3 r3 12 
+;	add r3 r3 12 
+;	add r5 r5 8
+;	add r5 r5 8
+;	verts_loop:
+;		sub r3 r3 1
+;		rmem r2 [r3] 
+;		sub r3 r3 1
+;		rmem r1 [r3] 
+;		sub r3 r3 1
+;		rmem r0 [r3] 
+;		.push r6
+;		.push r5
+;		.push r3
+;		.push r13
+;		.push r6
+;
+;		.push r2
+;		copy r2 r6
+;		call rotation ;rotate on axis z
+;		.pop r2
+;
+;		.pop r6
+;		.push r6
+;		
+;		.push r1
+;		copy r1 r2
+;		copy r2 r6
+;		call rotation
+;		copy r2 r1
+;		.pop r1
+;		call projection
+;		copy r2 r1
+;		copy r1 r0
+;		letl r0 0xFF
+;		.pop r6
+;		.push r1
+;		.push r2
+;		call plotpx
+;		.pop r2
+;		.pop r1
+;		.pop r13
+;		.pop r3
+;		.pop r5
+;
+;		sub r5 r5 1
+;		wmem r2 [r5]
+;		sub r5 r5 1
+;		wmem r1 [r5]
+;		snif r3 eq r13
+;			jump verts_loop
+	.let r5 8
 	verts_loop:
+		.set r3 points
+		add r3 r3 r5
+		add r3 r3 r5
+		add r3 r3 r5
 		sub r3 r3 1
 		rmem r2 [r3] 
 		sub r3 r3 1
 		rmem r1 [r3] 
 		sub r3 r3 1
 		rmem r0 [r3] 
-		.push r6
+;		.push r6
 		.push r5
-		.push r3
-		.push r13
 		.push r6
 
 		.push r2
@@ -53,7 +103,7 @@ loop:
 
 		.pop r6
 		.push r6
-		
+	
 		.push r1
 		copy r1 r2
 		copy r2 r6
@@ -70,20 +120,62 @@ loop:
 		call plotpx
 		.pop r2
 		.pop r1
-		.pop r13
-		.pop r3
 		.pop r5
 
+		.set r3 transformed_points
+		add r3 r3 r5
+		add r3 r3 r5
+		sub r3 r3 1
+		wmem r2 [r3]
+		sub r3 r3 1
+		wmem r1 [r3]
 		sub r5 r5 1
-		wmem r2 [r5]
-		sub r5 r5 1
-		wmem r1 [r5]
-		snif r3 eq r13
+		snif r5 eq 0
 			jump verts_loop
+	.let r5 16
+	normals_loop:
+		.set r3 normals
+		add r3 r3 r5
+		add r3 r3 r5
+		add r3 r3 r5
+		sub r3 r3 1
+		rmem r2 [r3] 
+		sub r3 r3 1
+		rmem r1 [r3] 
+		sub r3 r3 1
+		rmem r0 [r3] 
+		.push r5
+		.push r6
+
+		.push r2
+		copy r2 r6
+		call rotation ;rotate on axis z
+		.pop r2
+
+		.pop r6
+		.push r6
+	
+		copy r1 r2
+		copy r2 r6
+		call rotation
+		copy r2 r1
+		.pop r6
+		.pop r5
+
+		.set r3 transformed_normals
+		add r3 r3 r5
+		sub r3 r3 1
+		wmem r2 [r3]
+		sub r5 r5 1
+		snif r5 eq 0
+			jump normals_loop
+
+
 	.set r5 edges
 	.set r13 edges
 	add r5 r5 12
 	add r5 r5 12
+	.push r6
 	edges_loop:
 		sub r5 r5 1
 		rmem r10 [r5]
@@ -113,17 +205,12 @@ loop:
 		rmem r4 [r11]
 		letl r0 0xff
 		.push r15
-		.push r6
 		call line
-		.pop r6
 		.pop r15
 		.pop r5
 
 		snif r5 eq r13
 			jump edges_loop
-
-
-	.push r6
 	.set r6 triangles
 	add r6 r6 12
 	add r6 r6 12
@@ -301,7 +388,7 @@ filltri:
 		.let r14 128
 		snif r2 eq r14
 			jump __filltri_loopy
-	refresh
+;	refresh
 	.pop r15
 	return
 
@@ -467,9 +554,19 @@ rotation:
 projection:
 	;; project the point (r0; r1; r2) <- the coordinates are in the range [-1, 1]
 	;; return the coordinates in (r0, r1)
+	asr r0 r0 3
+	asr r1 r1 3
+	letl r6 64
+	add r0 r0 r6
+	add r1 r1 r6
+	return
+
 	.push r15
-	letl r6 5
+	letl r6 4
 	lsl r6 r6 7
+	sub r6 r6 15
+	sub r6 r6 15
+	sub r6 r6 15
 
 	add r2 r2 r6
 	add r2 r2 1
@@ -635,6 +732,8 @@ normals:
 	.word 0x0000
 	.word 0xFF00
 	.word 0x0000
+transformed_normals:
+	.reserve 16
 triangles:
 	.word 0
 	.word 1

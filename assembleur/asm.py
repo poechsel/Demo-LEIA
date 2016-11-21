@@ -218,6 +218,7 @@ class CustomString(_Instruction):
     """
     def __init__(self, *args):
         super(CustomString, self).__init__(*args)
+        print(self.words)
         self.word = " ".join(self.words[1:]) # a word can have some spaces in it. /!\ that means a ';' is put into the word
         self.jump_line = len(self.word) - 2 + 1 #a word has n+2 letter (because of \" to mark the begin and the end of the word) + 1 for the \0 char 
     
@@ -225,6 +226,7 @@ class CustomString(_Instruction):
         if not (self.word[0] == "\"" and self.word[-1] == "\""):
             print(_Erreur(self, "String", "Incorrect format"))
             return []
+        print(self.word)
         return [ord(c) for c in self.word[1:-1]] + [0]
 
 
@@ -589,6 +591,29 @@ def load_file(file_path):
         #then lower the string to avoid ambiguities
         #then put a space between comments to avoid problems
         #then split it to get the words
+        """ o = []
+        for l, line in enumerate(file):
+            if line.strip() != '':
+                lined = line.strip().lower().replace(";", " ;").split()
+                line_out = []
+                print(lined)
+                temp = ""
+                for e in lined:
+                    print(e)
+                    if e[0] == "\"":
+                        temp += e
+                    if temp != "":
+                        temp += " " + e
+                    else:
+                        line_out += e
+                    if e[-1] == "\"":
+                        line_out += [temp]
+                        temp = ""
+                if temp != "":
+                    line_out += [temp]
+                o += [(l, line_out)]
+        return o
+        """
         return [(l, line.strip().lower().replace(";", " ;").split()) for l, line in enumerate(file) if line.strip() != '']
     return None
 

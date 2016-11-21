@@ -20,7 +20,6 @@ line:
 	sub r5 r5 r6
 	add r5 r5 r1
 	add r2 r2 1
-	print r5
 	.push r5
 
 	snif r3 ge r1   ;si x2 >= x1

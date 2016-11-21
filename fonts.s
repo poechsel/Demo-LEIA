@@ -1,57 +1,41 @@
 xor r0 r0 r0
 call clearscr
 refresh
-;letl r0 128
-;letl r1 20
-;letl r2 0
-;letl r3 65
-;call putchar
-;jump 0
 
-;xor r1 r1 r1
-;letl r0 72
-;wmem r0 [r1]
-;add r1 r1 1
-;letl r0 'E'
-;wmem r0 [r1]
-;add r1 r1 1
-;letl r0 'L'
-;wmem r0 [r1]
-;add r1 r1 1
-;letl r0 'L'
-;wmem r0 [r1]
-;add r1 r1 1
-;letl r0 'O'
-;wmem r0 [r1]
-;add r1 r1 1
-;letl r0 32
-;wmem r0 [r1]
-;add r1 r1 1
-;letl r0 'W'
-;wmem r0 [r1]
-;add r1 r1 1
-;letl r0 'o'
-;wmem r0 [r1]
-;add r1 r1 1
-;letl r0 'r'
-;wmem r0 [r1]
-add r1 r1 1
-;letl r0 'l'
-;wmem r0 [r1]
-;add r1 r1 1
-;letl r0 'd'
-;wmem r0 [r1]
-;add r1 r1 1
-;letl r0 '!'
-;wmem r0 [r1]
-;add r1 r1 1
-;letl r0 0
-;wmem r0 [r1]
-.set r1 message
 letl r0 128
 letl r1 20
 letl r2 0
-.set r3 message
+.set r3 msgline1
+call putstr
+letl r0 128
+letl r1 20
+letl r2 8
+.set r3 msgline2
+call putstr
+letl r0 128
+letl r1 20
+letl r2 16
+.set r3 msgline3
+call putstr
+letl r0 128
+letl r1 20
+letl r2 24
+.set r3 msgline4
+call putstr
+letl r0 128
+letl r1 20
+letl r2 32
+.set r3 msgline5
+call putstr
+letl r0 128
+letl r1 20
+letl r2 40
+.set r3 msgline6
+call putstr
+letl r0 128
+letl r1 20
+letl r2 48
+.set r3 msgline7
 call putstr
 jump 0
 
@@ -161,6 +145,50 @@ clearscr:
 		snif r1 eq 0
 			jump ____loop_clrscr
 	return
-message:
-.string "Hello, world"
+msgline7:
+.string "  5 ---- 6"
+msgline6:
+.word " "
+.word "/"
+.word "|"
+.word " "
+.word " "
+.word " "
+.word " "
+.word " "
+.word "/"
+.word "|"
+.word 0
+msgline5:
+.string	"2------3 |"
+msgline4:
+.word "|"
+.word " "
+.word "|"
+.word " "
+.word " "
+.word " "
+.word " "
+.word "|"
+.word " "
+.word "|"
+.word 0
+msgline3:
+.string	"| 4----|-7"
+msgline2:
+.word "/"
+.word "|"
+.word " "
+.word " "
+.word " "
+.word " "
+.word " "
+.word "/"
+.word "|"
+.word " "
+.word 0
+msgline1:
+.string	"1------0  "
+
+
 #include fonts_data.s
