@@ -26,62 +26,37 @@ call filltri
 loop:
 	letl r0 0
 	call clearscr
-;	.set r13 points
-;	.set r3 points
-;	.set r5 transformed_points
-;	add r3 r3 12 
-;	add r3 r3 12 
-;	add r5 r5 8
-;	add r5 r5 8
-;	verts_loop:
-;		sub r3 r3 1
-;		rmem r2 [r3] 
-;		sub r3 r3 1
-;		rmem r1 [r3] 
-;		sub r3 r3 1
-;		rmem r0 [r3] 
-;		.push r6
-;		.push r5
-;		.push r3
-;		.push r13
-;		.push r6
-;
-;		.push r2
-;		copy r2 r6
-;		call rotation ;rotate on axis z
-;		.pop r2
-;
-;		.pop r6
-;		.push r6
-;		
-;		.push r1
-;		copy r1 r2
-;		copy r2 r6
-;		call rotation
-;		copy r2 r1
-;		.pop r1
-;		call projection
-;		copy r2 r1
-;		copy r1 r0
-;		letl r0 0xFF
-;		.pop r6
-;		.push r1
-;		.push r2
-;		call plotpx
-;		.pop r2
-;		.pop r1
-;		.pop r13
-;		.pop r3
-;		.pop r5
-;
-;		sub r5 r5 1
-;		wmem r2 [r5]
-;		sub r5 r5 1
-;		wmem r1 [r5]
-;		snif r3 eq r13
-;			jump verts_loop
-	.let r5 8
-	verts_loop:
+	.let r0 8
+;	letl r0 114
+	.set r1 projection_ortho
+	call transform_points
+	.let r0 12
+	;.let r0 224
+	call transform_normals
+	.push r6
+	.let r0 12
+	;.let r0 224
+	call draw_faces
+	letl r0 12
+	;call draw_edges
+	.pop r6	
+	refresh
+	sub r6 r6 1
+	snif r6 slt 0
+		jump loop
+jump 0
+
+
+.align16
+transform_points:
+	.push r15
+	copy r5 r0
+	.set r9 __transform_points_rewrite
+	lsr r1 r1 4
+	.let r2 0xa000
+	or r1 r2 r1
+	wmem r1 [r9]
+	__transform_points_loop:
 		.set r3 points
 		add r3 r3 r5
 		add r3 r3 r5
@@ -110,16 +85,17 @@ loop:
 		call rotation
 		copy r2 r1
 		.pop r1
-		call projection
+		__transform_points_rewrite:
+		call projection_ortho
 		copy r2 r1
 		copy r1 r0
 		letl r0 0xFF
 		.pop r6
-;		.push r1
-;		.push r2
-;		call plotpx
-;		.pop r2
-;		.pop r1
+		.push r1
+		.push r2
+		call plotpx
+		.pop r2
+		.pop r1
 		.pop r5
 
 		.set r3 transformed_points
@@ -131,9 +107,15 @@ loop:
 		wmem r1 [r3]
 		sub r5 r5 1
 		snif r5 eq 0
-			jump verts_loop
-	.let r5 12
-	normals_loop:
+			jump __transform_points_loop
+	.pop r15
+	return
+
+.align16
+transform_normals:
+	.push r15
+	copy r5 r0
+	__transform_normals_loop:
 		.set r3 normals
 		add r3 r3 r5
 		add r3 r3 r5
@@ -169,14 +151,58 @@ loop:
 		wmem r2 [r3]
 		sub r5 r5 1
 		snif r5 eq 0
-			jump normals_loop
+			jump __transform_normals_loop
+	.pop r15
+	return
 
+.align16
+draw_edges:
+	.push r15
+	.set r5 edges
+	.set r13 edges
+	add r5 r5 r0
+	add r5 r5 r0
+	__draw_edges_loop:
+		sub r5 r5 1
+		rmem r10 [r5]
+		sub r5 r5 1
+		rmem r11 [r5]
+		.push r5
+		.set r12 transformed_points
+		copy r5 r10
+		lsl r5 r5 1
+		add r5 r5 r12
+		copy r10 r5
 
+		copy r5 r11
+		lsl r5 r5 1
+		add r5 r5 r12
+		copy r11 r5
 
-	.push r6
+		rmem r1 [r10]
+		copy r5 r10
+		add r5 r5 1
+		copy r10 r5
+		rmem r2 [r10]
+		rmem r3 [r11]
+		copy r5 r11
+		add r5 r5 1
+		copy r11 r5
+		rmem r4 [r11]
+		letl r0 0xff
+		call line
+		.pop r5
 
-	.let r6 12
-	faces_loop:
+		snif r5 eq r13
+			jump __draw_edges_loop
+	.pop r15
+	return
+
+.align16
+draw_faces:
+	.push r15
+	copy r6 r0
+	__draw_faces_loop:
 		;test the normal
 		.set r5 transformed_normals
 		add r5 r5 r6
@@ -186,8 +212,9 @@ loop:
 		lsl r2 r1 7
 		and r0 r0 r2
 		lsr r1 r1 15
-		snif r1 eq 1
-			jump faces_end
+		snif r1 eq 0
+			jump __draw_faces_end
+
 		.push r6
 		.set r5 triangles
 		add r5 r5 r6
@@ -232,65 +259,75 @@ loop:
 		.pop r13
 		.pop r6
 		.pop r6
-		faces_end:
+		__draw_faces_end:
 		sub r6 r6 1
 		snif r6 eq 0
-			jump faces_loop
-
-;	.set r5 edges
-;	.set r13 edges
-;	add r5 r5 12
-;	add r5 r5 12
-;	edges_loop:
-;		sub r5 r5 1
-;		rmem r10 [r5]
-;		sub r5 r5 1
-;		rmem r11 [r5]
-;		.push r5
-;		.set r12 transformed_points
-;		copy r5 r10
-;		lsl r5 r5 1
-;		add r5 r5 r12
-;		copy r10 r5
-;
-;		copy r5 r11
-;		lsl r5 r5 1
-;		add r5 r5 r12
-;		copy r11 r5
-;
-;		rmem r1 [r10]
-;		copy r5 r10
-;		add r5 r5 1
-;		copy r10 r5
-;		rmem r2 [r10]
-;		rmem r3 [r11]
-;		copy r5 r11
-;		add r5 r5 1
-;		copy r11 r5
-;		rmem r4 [r11]
-;		letl r0 0xff
-;		.push r15
-;		call line
-;		.pop r15
-;		.pop r5
-;
-;		snif r5 eq r13
-;			jump edges_loop
-;
-	.pop r6	
-	refresh
-	sub r6 r6 1
-	snif r6 slt 0
-		jump loop
-jump 0
+			jump __draw_faces_loop
+	.pop r15
+	return
 
 
 .align16
 filltri:
 	.push r15
+	.push r0
+
+	.let r14 0x40 ;;minx
+	.let r12 0x50 ;;maxx
+	.let r15 0x34 ;;miny
+	.let r13 0x44 ;;maxy
+
+	copy r12 r1
+	copy r14 r1
+	snif r3 lt r12
+		copy r12 r3
+	snif r3 gt r14
+		copy r14 r3
+	snif r5 lt r12
+		copy r12 r5
+	snif r5 gt r14
+		copy r14 r5
+	copy r13 r2
+	copy r15 r2
+	snif r4 lt r13
+		copy r13 r4
+	snif r4 gt r15
+		copy r15 r4
+	snif r6 lt r13
+		copy r13 r6
+	snif r6 gt r15
+		copy r15 r6
+	add r0 r12 1
+	copy r12 r0
+	add r0 r13 1
+	copy r13 r0
+
 
 	;todo
-	.push r0
+	.set r10 __filltri_rewrite1
+	copy r11 r12
+	leth r11 0xce
+	;.let r11 0xce50
+	wmem r11 [r10]
+	.set r10 __filltri_rewrite2
+	copy r11 r13
+	leth r11 0xce
+	;.let r11 0xce44
+	wmem r11 [r10]
+
+	.set r10 __filltri_rewrite3
+	copy r11 r14
+	leth r11 0xc1
+	;.let r11 0xc140
+	wmem r11 [r10]
+	.set r10 __filltri_rewrite4
+	copy r11 r15
+	leth r11 0xc2
+	;.let r11 0xc234
+	wmem r11 [r10]
+	
+	;.let r14 0x40
+	;.let r15 0x34
 
 	;; compute the increments
 	sub r0 r5 r3
@@ -311,8 +348,12 @@ filltri:
 	.push r1
 	.push r3
 	copy r0 r8
-	copy r1 r4
+	;copy r1 r4
+	copy r1 r15
+	sub r1 r1 r4
+	.push r15
 	call mul16
+	.pop r15
 	copy r0 r2
 	.pop r3
 	.pop r1
@@ -321,10 +362,15 @@ filltri:
 	.push r1
 	.push r0
 	copy r0 r11
-	copy r1 r3
+	copy r1 r14
+	sub r1 r1 r3
+	;copy r1 r3
+	.push r15
 	call mul16
+	.pop r15
 	.pop r0
-	sub r0 r2 r0
+	sub r0 r0 r2
+	;sub r0 r2 r0
 	.pop r1
 	.pop r2
 
@@ -334,8 +380,12 @@ filltri:
 	.push r2
 	.push r1
 	copy r0 r9
-	copy r1 r6
+	copy r1 r15
+	sub r1 r1 r6
+	;copy r1 r6
+	.push r15
 	call mul16
+	.pop r15
 	copy r0 r2
 	.pop r1
 	.pop r2
@@ -343,10 +393,15 @@ filltri:
 	.push r1
 	.push r0
 	copy r0 r12
-	copy r1 r5
+	copy r1 r14
+	sub r1 r1 r5
+	;copy r1 r5
+	.push r15
 	call mul16
+	.pop r15
 	.pop r0
-	sub r0 r2 r0
+	sub r0 r0 r2
+	;sub r0 r2 r0
 	.pop r1
 	.pop r2
 	
@@ -354,26 +409,49 @@ filltri:
 
 	.push r1
 	copy r0 r10
-	copy r1 r2
+	copy r1 r15
+	sub r1 r1 r2
+	;copy r1 r2
+	.push r15
 	call mul16
+	.pop r15
 	copy r0 r2
-	.pop r1
+	.pop r3
 	.push r0
 	copy r0 r13
+	copy r1 r14
+	sub r1 r1 r3
+	.push r15
 	call mul16
+	.pop r15
 	.pop r0
 
-	sub r6 r2 r0
+	sub r6 r0 r2
 	.pop r5
 	.pop r4
 
 	
+
+	
+
+	
+
 	.pop r0
-	.let r2 0
+	__filltri_rewrite4:
+	letl r2 0
+	leth r2 0
+	;.let r14 68
+	;.push r14
+	;.let r14 80
+	;.push r14
 	;now we need to go through the screen
-	.let r15 0xaf60
+;	.let r15 0xaf60
 	__filltri_loopy:
-		.let r1 0
+		__filltri_rewrite3:
+		letl r1 0
+		leth r1 0
+		
+		;.pop r14
 		.push r4
 		.push r5
 		.push r6
@@ -387,10 +465,10 @@ filltri:
 			;.let r0 465
 			
 			snif r3 eq 1
-				wmem r0 [r15]
-				;call plotpx
-			add r1 r15 1
-			copy r15 r1
+				;wmem r0 [r15]
+				call plotpx
+;			add r1 r15 1
+;			copy r15 r1
 			.pop r2
 			.pop r1
 
@@ -398,7 +476,10 @@ filltri:
 			sub r5 r5 r12
 			sub r6 r6 r13
 			add r1 r1 1
-			.let r14 160
+			__filltri_rewrite1:
+			letl r14 160
+			leth r14 0
+			;.let r14 160
 			snif r1 eq r14
 				jump __filltri_loopx
 		.pop r6
@@ -408,9 +489,17 @@ filltri:
 		add r5 r5 r9	
 		add r6 r6 r10	
 		add r2 r2 1
-		.let r14 128
+		;.let r14 128
+	;	.pop r15
+	;	.push r15
+	;	.push r14
+		__filltri_rewrite2:
+		letl r14 128
+		leth r14 0
 		snif r2 eq r14
 			jump __filltri_loopy
+	;.pop r14
+	;.pop r15
 ;	refresh
 	.pop r15
 	return
@@ -468,15 +557,18 @@ rotation:
 	return
 
 .align16
-projection:
+projection_ortho:
+	asr r0 r0 3
+	asr r1 r1 3
+	letl r6 64
+	add r0 r0 r6
+	add r1 r1 r6
+	return
+	
+.align16
+projection_persp:
 	;; project the point (r0; r1; r2) <- the coordinates are in the range [-1, 1]
 	;; return the coordinates in (r0, r1)
-	;asr r0 r0 3
-	;asr r1 r1 3
-	;letl r6 64
-	;add r0 r0 r6
-	;add r1 r1 r6
-	;return
 
 	.push r15
 	letl r6 5
@@ -532,216 +624,8 @@ projection:
 	
 
 
+#include cube_datas.s
 #include arithmetics.s
 #include vfx.s
 #include mathlut.s
-
-points:
-	.word 0x0100						
-	.word 0xFF00
-	.word 0x0100
-
-	.word 0xFF00
-	.word 0xFF00
-	.word 0x0100
-
-	.word 0xFF00
-	.word 0x0100
-	.word 0x0100
-
-	.word 0x0100
-	.word 0x0100
-	.word 0x0100
-
-	.word 0xFF00
-	.word 0xFF00
-	.word 0xFF00
-	
-	.word 0xFF00
-	.word 0x0100
-	.word 0xFF00
-
-	.word 0x0100
-	.word 0x0100
-	.word 0xFF00
-
-	.word 0x0100
-	.word 0xFF00
-	.word 0xFF00
-transformed_points:
-	.reserve 16
-edges:
-	.word 0	
-	.word 1
-	
-	.word 0	
-	.word 7
-	
-	.word 0	
-	.word 3
-	
-	.word 1
-	.word 2
-	
-	.word 1	
-	.word 4
-	
-	.word 2		
-	.word 3
-	
-	.word 2		
-	.word 5
-	
-	.word 3	
-	.word 6
-	
-	.word 4	
-	.word 7
-	
-	.word 4
-	.word 5
-	
-	.word 5	
-	.word 6
-	
-	.word 6	
-	.word 7
-normals:
-	.word 0x0000
-	.word 0x0000
-	.word 0x0100
-	.word 0x0000
-	.word 0x0000
-	.word 0x0100
-
-	.word 0x0000
-	.word 0x0100
-	.word 0x0000
-	.word 0x0000
-	.word 0x0100
-	.word 0x0000
-
-	.word 0x0100
-	.word 0x0000
-	.word 0x0000
-	.word 0x0100
-	.word 0x0000
-	.word 0x0000
-
-	.word 0xFF00
-	.word 0x0000
-	.word 0x0000
-	.word 0xFF00
-	.word 0x0000
-	.word 0x0000
-
-	.word 0x0000
-	.word 0x0000
-	.word 0xFF00
-	.word 0x0000
-	.word 0x0000
-	.word 0xFF00
-
-	.word 0x0000
-	.word 0xFF00
-	.word 0x0000
-	.word 0x0000
-	.word 0xFF00
-	.word 0x0000
-transformed_normals:
-	.reserve 12
-
-triangles:
-	.word 3
-	.word 1
-	.word 0
-	.word 3
-	.word 2
-	.word 1
-
-	.word 6
-	.word 5
-	.word 2
-	.word 2
-	.word 3
-	.word 6
-
-	.word 0
-	.word 7
-	.word 6
-	.word 6
-	.word 3
-	.word 0
-
-	.word 4
-	.word 1
-	.word 2
-	.word 2
-	.word 5
-	.word 4
-
-	.word 7
-	.word 4
-	.word 5
-	.word 5
-	.word 6
-	.word 7
-
-	.word 4
-	.word 7
-	.word 0
-	.word 0
-	.word 1
-	.word 4
-
-
-
-;triangles:
-;	.word 0
-;	.word 1
-;	.word 3
-;
-;	.word 1
-;	.word 2
-;	.word 3
-;
-;	.word 2
-;	.word 5
-;	.word 6
-;
-;	.word 6
-;	.word 3
-;	.word 2
-;
-;	.word 6
-;	.word 7
-;	.word 0
-;
-;	.word 0
-;	.word 3
-;	.word 6
-;
-;	.word 2
-;	.word 1
-;	.word 4
-;
-;	.word 4
-;	.word 5
-;	.word 2
-;
-;	.word 5
-;	.word 4
-;	.word 7
-;
-;	.word 7
-;	.word 6
-;	.word 5
-;
-;	.word 0
-;	.word 7
-;	.word 4
-;
-;	.word 4
-;	.word 1
-;	.word 0
 stack:
