@@ -115,11 +115,11 @@ loop:
 		copy r1 r0
 		letl r0 0xFF
 		.pop r6
-		.push r1
-		.push r2
-		call plotpx
-		.pop r2
-		.pop r1
+;		.push r1
+;		.push r2
+;		call plotpx
+;		.pop r2
+;		.pop r1
 		.pop r5
 
 		.set r3 transformed_points
@@ -237,46 +237,46 @@ loop:
 		snif r6 eq 0
 			jump faces_loop
 
-	.set r5 edges
-	.set r13 edges
-	add r5 r5 12
-	add r5 r5 12
-	edges_loop:
-		sub r5 r5 1
-		rmem r10 [r5]
-		sub r5 r5 1
-		rmem r11 [r5]
-		.push r5
-		.set r12 transformed_points
-		copy r5 r10
-		lsl r5 r5 1
-		add r5 r5 r12
-		copy r10 r5
-
-		copy r5 r11
-		lsl r5 r5 1
-		add r5 r5 r12
-		copy r11 r5
-
-		rmem r1 [r10]
-		copy r5 r10
-		add r5 r5 1
-		copy r10 r5
-		rmem r2 [r10]
-		rmem r3 [r11]
-		copy r5 r11
-		add r5 r5 1
-		copy r11 r5
-		rmem r4 [r11]
-		letl r0 0xff
-		.push r15
-		call line
-		.pop r15
-		.pop r5
-
-		snif r5 eq r13
-			jump edges_loop
-
+;	.set r5 edges
+;	.set r13 edges
+;	add r5 r5 12
+;	add r5 r5 12
+;	edges_loop:
+;		sub r5 r5 1
+;		rmem r10 [r5]
+;		sub r5 r5 1
+;		rmem r11 [r5]
+;		.push r5
+;		.set r12 transformed_points
+;		copy r5 r10
+;		lsl r5 r5 1
+;		add r5 r5 r12
+;		copy r10 r5
+;
+;		copy r5 r11
+;		lsl r5 r5 1
+;		add r5 r5 r12
+;		copy r11 r5
+;
+;		rmem r1 [r10]
+;		copy r5 r10
+;		add r5 r5 1
+;		copy r10 r5
+;		rmem r2 [r10]
+;		rmem r3 [r11]
+;		copy r5 r11
+;		add r5 r5 1
+;		copy r11 r5
+;		rmem r4 [r11]
+;		letl r0 0xff
+;		.push r15
+;		call line
+;		.pop r15
+;		.pop r5
+;
+;		snif r5 eq r13
+;			jump edges_loop
+;
 	.pop r6	
 	refresh
 	sub r6 r6 1
@@ -471,12 +471,12 @@ rotation:
 projection:
 	;; project the point (r0; r1; r2) <- the coordinates are in the range [-1, 1]
 	;; return the coordinates in (r0, r1)
-	asr r0 r0 3
-	asr r1 r1 3
-	letl r6 64
-	add r0 r0 r6
-	add r1 r1 r6
-	return
+	;asr r0 r0 3
+	;asr r1 r1 3
+	;letl r6 64
+	;add r0 r0 r6
+	;add r1 r1 r6
+	;return
 
 	.push r15
 	letl r6 5
@@ -501,9 +501,11 @@ projection:
 	copy r0 r8
 
 	letl r6 64
+	lsl r1 r1 1
 	add r1 r1 r6
 	letl r6 80
 	leth r6 0
+	lsl r0 r0 1
 	add r0 r0 r6
 	.pop r15
 	return

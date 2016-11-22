@@ -146,49 +146,19 @@ clearscr:
 			jump ____loop_clrscr
 	return
 msgline7:
-.string "  5 ---- 6"
+.string "  5----6"
 msgline6:
-.word " "
-.word "/"
-.word "|"
-.word " "
-.word " "
-.word " "
-.word " "
-.word " "
-.word "/"
-.word "|"
-.word 0
+.string " /|   /|"
 msgline5:
-.string	"2------3 |"
+.string	"2----3 |"
 msgline4:
-.word "|"
-.word " "
-.word "|"
-.word " "
-.word " "
-.word " "
-.word " "
-.word "|"
-.word " "
-.word "|"
-.word 0
+.string "| |  | |"
 msgline3:
-.string	"| 4----|-7"
+.string	"| 4--|-7"
 msgline2:
-.word "/"
-.word "|"
-.word " "
-.word " "
-.word " "
-.word " "
-.word " "
-.word "/"
-.word "|"
-.word " "
-.word 0
+.string "|/   |/ "
 msgline1:
-.string	"1------0  "
+.string	"1----0  "
 
 
 #include fonts_data.s

@@ -580,7 +580,7 @@ class _Environment:
             if inspect.isclass(obj) and "_" != name[0]:
                 self.instr_set[name.lower().replace("custom", ".")] = obj
     
-
+import re
 def load_file(file_path):
     """ 
     read a file and return the list of lines as words
@@ -591,6 +591,7 @@ def load_file(file_path):
         #then lower the string to avoid ambiguities
         #then put a space between comments to avoid problems
         #then split it to get the words
+        PATTERN = re.compile(r'''((?:[^\s"']|"[^"]*"|'[^']*')+)''')
         """ o = []
         for l, line in enumerate(file):
             if line.strip() != '':
@@ -614,7 +615,7 @@ def load_file(file_path):
                 o += [(l, line_out)]
         return o
         """
-        return [(l, line.strip().lower().replace(";", " ;").split()) for l, line in enumerate(file) if line.strip() != '']
+        return [(l, PATTERN.split(line.strip().lower().replace(";", " ;"))[1::2]) for l, line in enumerate(file) if line.strip() != '']
     return None
 
 
