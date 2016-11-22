@@ -26,16 +26,16 @@ call filltri
 loop:
 	letl r0 0
 	call clearscr
-	.let r0 8
-;	letl r0 114
+;	.let r0 8
+	.let r0 512
 	.set r1 projection_ortho
 	call transform_points
-	.let r0 12
-	;.let r0 224
+;	.let r0 12
+	.let r0 968
 	call transform_normals
 	.push r6
-	.let r0 12
-	;.let r0 224
+	;.let r0 12
+	.let r0 968
 	call draw_faces
 	letl r0 12
 	;call draw_edges
@@ -212,7 +212,7 @@ draw_faces:
 		lsl r2 r1 7
 		and r0 r0 r2
 		lsr r1 r1 15
-		snif r1 eq 0
+		snif r1 eq 1
 			jump __draw_faces_end
 
 		.push r6
@@ -624,7 +624,7 @@ projection_persp:
 	
 
 
-#include cube_datas.s
+#include suzanne_datas.s
 #include arithmetics.s
 #include vfx.s
 #include mathlut.s
