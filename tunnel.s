@@ -6,8 +6,8 @@ xor r0 r0 r0
 .let r14 100
 loop:
 call image
-add r0 r13 1
-copy r13 r0
+;add r0 r13 1
+;copy r13 r0
 ;add r0 r12 5
 ;copy r12 r0
 snif r4 eq 0
@@ -19,9 +19,9 @@ image:
 .push r15
 xor r0 r0 r0
 call clearscr
-.let r6 128
+.let r6 64
 loopy:
-	.let r5 125
+	.let r5 64
 	loopx:
 		.let r8 64
 		;print "---------"
@@ -64,9 +64,10 @@ loopy:
 		;now, compute the index for the lut
 		copy r3 r5
 		copy r4 r3
-		lsl r3 r3 7
-		lsl r4 r4 5
-		add r3 r4 r3
+;		lsl r3 r3 7
+;		lsl r4 r4 5
+		lsl r3 r3 6
+;		add r3 r4 r3
 		add r3 r3 r6
 
 		;print r1
@@ -76,11 +77,16 @@ loopy:
 		rmem r1 [r8]
 		copy r2 r0
 
-
-;		.set r8 lut_tunnel_dists
-;		add r4 r8 r3
-;		copy r8 r4
-;		rmem r2 [r8]
+		lsl r3 r5 6
+		add r3 r3 r6
+		.set r8 lut_tunnel_dists
+		add r4 r8 r3
+		copy r8 r4
+		rmem r2 [r8]
+		copy r0 r2
+		add r0 r0 r12
+		.let r8 0x3f
+		and r0 r0 r8
 		;print r5
 		;print r6
 		;print r3
@@ -103,6 +109,7 @@ loopy:
 		add r4 r8 r3
 		copy r8 r4
 		rmem r0 [r8]
+
 		
 		;copy r2 r0
 		;copy r4 r0
