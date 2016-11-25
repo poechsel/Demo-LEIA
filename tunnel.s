@@ -6,9 +6,9 @@ xor r0 r0 r0
 .let r4 1
 loop:
 call image
-;add r0 r14 1
-;copy r14 r0
-add r0 r13 1
+add r0 r14 1
+copy r14 r0
+add r0 r13 4
 copy r13 r0
 .let r4 1
 snif r4 eq 0
@@ -17,38 +17,54 @@ jump 0
 
 .align16
 image:
+xor r3 r3 r3
 .push r15
 xor r0 r0 r0
 call clearscr
 .let r11 0
 loopy:
-	.let r10 0
-	.let r8 32
-
+	.let r10 0 
+	.let r8 64
+	xor r3 r3 r3
 	sub r6 r11 r8
 	snif r6 sgt -1
+		jump cond1
+	jump end1
+	cond1:
 		xor r6 r6 -1
-	.let r8 31
+		add r3 r3 1
+	end1:
+	.let r8 63
 	sub r6 r8 r6
 	copy r9 r6
-
+	.push r3
 	loopx:
+		.pop r3
+		.push r3
 		copy r6 r9
-		.let r8 32
+		.let r8 64
 		sub r5 r10 r8
+		lsl r3 r3 1
 		snif r5 sgt -1
+			jump cond2
+		jump end2
+		cond2:
 			xor r5 r5 -1
-		.let r8 31
+			add r3 r3 1
+		end2:
+		lsl r3 r3 1
+		.let r8 63
 		sub r4 r8 r6
 		snif r5 le r4
 			jump swap
 		jump end
 		swap:
-		.let r4 31
-		sub r4 r4 r6
-		sub r4 r4 r5
-		add r6 r6 r4
-		add r5 r5 r4
+			.let r4 63
+			sub r4 r4 r6
+			sub r4 r4 r5
+			add r6 r6 r4
+			add r5 r5 r4
+			add r3 r3 1
 		end:
 		
 
@@ -81,6 +97,36 @@ loopy:
 		add r4 r4 r8
 		copy r8 r4
 		rmem r2 [r8]
+
+
+		.set r8 offset_tunnel
+		add r4 r8 r6
+		copy r8 r4
+		.set r8 lut_tunnel_angles
+		copy r4 r5
+		add r4 r4 r12
+		add r4 r4 r6
+		add r4 r4 r8
+		copy r8 r4
+		rmem r1 [r8]
+
+		and r4 r3 1
+		.let r8 -16
+		snif r4 eq 0
+			sub r1 r8 r1
+		lsr r3 r3 1
+		and r4 r3 1
+		.let r8 -32
+		snif r4 eq 0
+			sub r1 r8 r1
+		lsr r3 r3 1
+		and r4 r3 1
+		snif r4 eq 0
+			jump end3
+		xor r1 r1 -1
+		add r1 r1 1
+		end3:
+
 		
 
 
@@ -90,30 +136,132 @@ loopy:
 		and r2 r2 r8
 		and r1 r1 r8
 
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+		add r0 r0 0
+
+		.let r8 64
+		sub r3 r10 r8
+		sub r4 r11 r8
+		.push r1
+		.push r2
+
+		copy r0 r3
+		copy r1 r3
+		call mul16
+		copy r5 r2
+		copy r0 r4
+		copy r1 r4
+		call mul16
+		add r3 r2 r5
+		.let r8 121
+		.pop r2
+		.pop r1
+		snif r3 ge r8
+			jump no_draw
 
 		.set r8 img_tunnel
 		lsl r2 r2 6
 		add r2 r2 r1
 		add r0 r8 r2
 		rmem r0 [r0]
+		;xor r0 r1 r2
 		copy r1 r10
+		.let r8 16
+		add r1 r1 r8
 		copy r2 r11
-		.push r15
 		call plotpx
-		.pop r15
+		no_draw:
 
 		add r6 r10 1
 		copy r10 r6
-		.let r8 64
+		.let r8 128
 		snif r10 eq r8
 			jump loopx
 	
+	.pop r3
 	add r6 r11 1
 	copy r11 r6
-	.let r8 64
+	.let r8 128
 	snif r11 eq r8
 		jump loopy
-
 .pop r15
 refresh
 return
