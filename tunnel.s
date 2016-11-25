@@ -1,15 +1,16 @@
 .set r7 stack
 
 xor r0 r0 r0
-.let r12 1
 .let r13 1
-.let r14 100
+.let r14 1
+.let r4 1
 loop:
 call image
-;add r0 r13 1
-;copy r13 r0
-;add r0 r12 5
-;copy r12 r0
+;add r0 r14 1
+;copy r14 r0
+add r0 r13 1
+copy r13 r0
+.let r4 1
 snif r4 eq 0
 	jump loop
 jump 0
@@ -19,128 +20,99 @@ image:
 .push r15
 xor r0 r0 r0
 call clearscr
-.let r6 64
+.let r11 0
 loopy:
-	.let r5 64
+	.let r10 0
+	.let r8 32
+
+	sub r6 r11 r8
+	snif r6 sgt -1
+		xor r6 r6 -1
+	.let r8 31
+	sub r6 r8 r6
+	copy r9 r6
+
 	loopx:
-		.let r8 64
-		;print "---------"
-		sub r0 r5 r8
-		copy r1 r0
-		call mul16
-		copy r4 r2
-		.let r8 80
-		sub r1 r6 r8
-		copy r0 r1
-		call mul16
-		add r0 r4 r2
-		call sqrt
-		;print r0
-		lsl r0 r0 2 ;;to augment precision
-		copy r1 r0
-		.let r0 0x0400
-		call div ;;we obtain a float with a precision of 8 bit 
-		;print r2
-		lsr r0 r0 3 ;bit of tricking here
-	copy r2 r0
-	;	lsl r0 r0 5
-	;	lsr r0 r0 5
-	;	lsl r0 r0 6
-	;	lsr r0 r0 6
-	;	lsl r0 r0 8
-;	print r0
-	; mask for modulo:
-
-
-		;snif r0 gt 4
-		;	jump __tunnel_end
-		add r0 r0 r12
-		.let r8 0x3f
-		and r0 r0 r8
-		;print r0
-
-
+		copy r6 r9
+		.let r8 32
+		sub r5 r10 r8
+		snif r5 sgt -1
+			xor r5 r5 -1
+		.let r8 31
+		sub r4 r8 r6
+		snif r5 le r4
+			jump swap
+		jump end
+		swap:
+		.let r4 31
+		sub r4 r4 r6
+		sub r4 r4 r5
+		add r6 r6 r4
+		add r5 r5 r4
+		end:
+		
 
 		;now, compute the index for the lut
-		copy r3 r5
-		copy r4 r3
-;		lsl r3 r3 7
-;		lsl r4 r4 5
-		lsl r3 r3 6
-;		add r3 r4 r3
-		add r3 r3 r6
+		copy r0 r10
+		lsl r0 r0 6
+		add r0 r0 r11
 
-		;print r1
 		.set r8 lut_tunnel_angles
-		add r4 r8 r3
-		copy r8 r4
+		add r0 r8 r0
+		copy r8 r0
 		rmem r1 [r8]
-		copy r2 r0
 
-		lsl r3 r5 6
-		add r3 r3 r6
+		;lsl r0 r10 6
+		;add r0 r0 r11
+		;.set r8 lut_tunnel_dists
+		;add r0 r8 r0
+		;copy r8 r0
+		;rmem r2 [r8]
+	
+		
+		.set r8 offset_tunnel
+		add r4 r8 r6
+		copy r8 r4
+		rmem r12 [r8]
 		.set r8 lut_tunnel_dists
-		add r4 r8 r3
+		copy r4 r5
+		add r4 r4 r12
+		add r4 r4 r6
+		add r4 r4 r8
 		copy r8 r4
 		rmem r2 [r8]
-		copy r0 r2
-		add r0 r0 r12
-		.let r8 0x3f
-		and r0 r0 r8
-		;print r5
-		;print r6
-		;print r3
-		;print r1
-		;print r2
+		
 
-		;.let r8 0x3f
-		;and r0 r0 r8
-		;and r1 r1 r8
-		add r1 r1 r13
+
+		add r2 r2 r13
+		add r1 r1 r14
 		.let r8 0x3f
+		and r2 r2 r8
 		and r1 r1 r8
 
 
 		.set r8 img_tunnel
-		copy r3 r0
-		copy r4 r3
-		lsl r3 r3 6
-		add r3 r3 r1
-		add r4 r8 r3
-		copy r8 r4
-		rmem r0 [r8]
-
-		
-		;copy r2 r0
-		;copy r4 r0
-		;lsl r0 r2 7
-		;lsl r4 r4 5
-		;add r0 r0 r4
-		;add r4 r0 r1
-
-		;add r4 r8 r0
-		;copy r8 r4
-		;rmem r0 [r8]
-
-		
-		;xor r0 r1 r2
-
-		;copy r0 r1
-		jump __tunnel_plot
-		__tunnel_end:
-		xor r0 r0 r0
-		__tunnel_plot:
-		copy r1 r5
-		copy r2 r6
+		lsl r2 r2 6
+		add r2 r2 r1
+		add r0 r8 r2
+		rmem r0 [r0]
+		copy r1 r10
+		copy r2 r11
+		.push r15
 		call plotpx
+		.pop r15
 
-		sub r5 r5 1
-		snif r5 eq 0
+		add r6 r10 1
+		copy r10 r6
+		.let r8 64
+		snif r10 eq r8
 			jump loopx
-	sub r6 r6 1
-	snif r6 eq 0
+	
+	add r6 r11 1
+	copy r11 r6
+	.let r8 64
+	snif r11 eq r8
 		jump loopy
-
 
 .pop r15
 refresh
