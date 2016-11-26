@@ -34,8 +34,7 @@ refresh
 
 snif r1 eq r3
 	jump gliding
-print coucou
-refresh 
+refresh
 
 .let r8 0xfc00 ; r8 is red
 .let r9 0x03c0 ; r9 is green
@@ -49,25 +48,26 @@ refresh
 loop_life:
 	; r1 <- x from 0 to 159
 	; r2 <- y from 0 to 127
-	.let r1 0
-	.let r3 0xb000
-	
+	.let r2 127
+	.let r3 0xb09e
+
 	.align16
-	life_x:
-		add r1 r1 1
-		.let r2 0
-		add r3 r3 1
+	life_y:
+		sub r2 r2 1
+		add r3 r3 2
+		;;;print r3
+		.let r1 0
 		
-		life_y:
-			add r2 r2 1
-			sub r3 r3 r10
-			sub r3 r3 2
+		life_x:
+			add r1 r1 1
+			add r3 r3 1
+			;;;print r3
 			
 			copy r12 r1
 			copy r13 r2
 			copy r14 r3
-			print "0"
-			print r14	
+			;;;print "0"
+			;;;print r14	
 			.let r5 0 ; r5 will contain the sum of all side pixels
 			.let r6 4
 			
@@ -122,14 +122,13 @@ loop_life:
 			
 			copy r1 r12
 			copy r2 r13
-			print "1"
-			print r14
-			copy r3 r14
-			print r3
+			copy r0 r3
+			sub r0 r0 r10
+			sub r0 r0 1
+			snif r1 neq r10
+				add r0 r0 1
+			copy r14 r0
 			call pixel_xy
-			print "2" 
-			print r3
-			;print r3
 			.let r0 2
 			snif r5 neq r0
 				jump end_mark_color
@@ -186,11 +185,103 @@ value_color:
 	
 			end_mark_color:
 
-			snif r2 eq r11
-				jump life_y
-		
-		snif r1 eq r10
-			jump life_x
+			snif r1 eq r10
+				jump life_x
+					
+
+			.let r1 0
+			.let r3 0xb000
+			.let r6 0xff60
+			loop_up: ; here we calculate the up border except the "coins"
+				add r1 r1 1
+				add r2 r2 1
+					
+				copy r14 r3
+				.let r5 0 ; r5 will contain the sum of all side pixels
+				.let r6 4
+				
+				sub r3 r3 1 ; r3 has the adress
+				call value_color; r5 gets added with [r3]'s value
+				
+				xor r3 r3 r6
+				xor r6 r3 r6
+				xor r3 r3 r6
+				
+				call value_color
+				
+				add r3 r3 1
+				call value_color
+				
+				add r3 r3 1
+				call value_color
+				
+				snif r5 neq r6
+					jump stop_calc  			
+				
+				add r3 r3 r10
+				add r3 r3 2
+				call value_color
+					
+				snif r5 neq r6
+					jump stop_calc  			
+				
+				add r3 r3 r10
+				add r3 r3 2
+				call value_color
+				
+				snif r5 neq r6
+					jump stop_calc  			
+				
+				sub r3 r3 1
+				call value_color
+				
+				snif r5 neq r6
+					jump stop_calc  			
+					
+				sub r3 r3 1
+				call value_color
+				
+				stop_calc:
+				
+				call pixel_xy
+				.let r0 2
+				snif r5 neq r0
+					jump end_up
+				
+				.let r0 3
+				snif r5 neq r0
+					jump s_is_3
+				
+				.let r0 0
+				rmem r4 [r3]
+				snif r4 eq r0
+					jump mark_red
+				
+				jump end_mark_color			
+				mark_red:
+					wmem r8 [r3]
+					jump end_up			
+				mark_green:
+					wmem r9 [r3]
+					jump end_up
+				
+				s_is_3:
+					.let r0 0
+					rmem r4 [r3]
+					snif r4 neq r0
+
+				end_up:
+
+				snif r1 eq r10
+					jump loop_up
+				
+
+
+
+
+		.let r0 1	
+		snif r2 eq r0
+			jump life_y
 	refresh	
 	
 	.let r3 0xb000
