@@ -1,4 +1,0 @@
-cp assembleur/asm.py .
-find *.s | xargs -I% python asm.py % | grep "Error"
-find demos-aleatoires/*.s | xargs -I% python asm.py % | grep "Error"
-rm asm.py

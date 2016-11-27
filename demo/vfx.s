@@ -9,7 +9,8 @@ putstr:
 		copy r13 r6
 		copy r14 r15
 		call putchar
-		refresh
+		snif r4 eq 0
+			refresh
 		copy r1 r10
 		copy r2 r11
 		copy r3 r12
@@ -249,3 +250,8 @@ fill:
 		snif r2 slt 0
 			jump __fill_loopy
 	return
+
+
+
+
+#include fonts_data.s

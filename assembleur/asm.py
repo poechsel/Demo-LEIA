@@ -572,6 +572,7 @@ class _Environment:
         self.labels = {}
         self.instr = []
         self.instr_set = {}
+        self.already_loaded = {}
         #a small introspection trick. We get all the instruction on the fly. 
         #If the name begins with _ we don't add it. Then, the name of the 
         #instructions correspond to the name of the class lowered and when 
@@ -615,7 +616,17 @@ def load_file(file_path):
                 o += [(l, line_out)]
         return o
         """
-        return [(l, PATTERN.split(line.strip().lower().replace(";", " ;"))[1::2]) for l, line in enumerate(file) if line.strip() != '']
+        o = []
+        for l, line in enumerate(file):
+            nl = PATTERN.split(line.strip().replace(";", " ;"))[1::2]
+            if line.strip() != '':
+                nl[0] = nl[0].lower()
+                if len(nl) and nl[0] not in [".string", ".word"]:
+                    for i in range(1, len(nl)):
+                        nl[i] = nl[i].lower()
+                o.append((l, nl))
+        #return [(l, PATTERN.split(line.strip().lower().replace(";", " ;"))[1::2]) for l, line in enumerate(file) if line.strip() != '']
+        return o
     return None
 
 
@@ -623,6 +634,9 @@ def load_file(file_path):
 
 def first_pass(path, f, env):
     #in the first pass we compute the label offsets, add the instruction to the set and load included files
+    if path in env.already_loaded:
+        return
+    env.already_loaded[path] = True;
     for l, line in f:
         if line[0][-1] == ":":
             if line[0] in env.labels:
