@@ -109,3 +109,57 @@ clearscr:
 		snif r1 eq 0
 			jump ____loop_clrscr
 	return
+
+.align16
+fill:
+
+	snif r1 le r3
+		jump __fill_r1>r3
+	;r1<=r3
+	copy r5 r1
+	sub r1 r3 r1
+	copy r3 r5
+	jump __fill_r1r3end
+
+	__fill_r1>r3:
+		sub r1 r1 r3
+	__fill_r1r3end:
+
+	snif r2 le r4
+		jump __fill_r2>r4
+	;r2<=r4
+	copy r5 r2
+	sub r2 r4 r2
+	copy r4 r5
+	jump __fill_r2r4end
+
+	__fill_r2>r4:
+		sub r2 r2 r4
+	__fill_r2r4end:
+
+	
+	add r4 r4 1
+	lsl r5 r4 7
+	lsl r4 r4 5
+	add r5 r5 r4
+	letl r4 0
+	sub r4 r4 r5
+	add r5 r4 r3
+
+	.let r4 161
+	add r4 r4 r1
+	copy r3 r1
+
+	__fill_loopy:
+		copy r1 r3
+		__fill_loopx:
+			wmem r0 [r5]
+			add r5 r5 1
+			sub r1 r1 1
+			snif r1 slt 0
+				jump __fill_loopx
+		sub r5 r5 r4
+		sub r2 r2 1
+		snif r2 slt 0
+			jump __fill_loopy
+	return
