@@ -174,7 +174,7 @@ lifegame:
 		.pop r10	
 		snif r1 eq r10
 			jump life_x
-	refresh	
+;	refresh	
 	
 	.let r3 0xb000
 	.let r2 0xffff
@@ -197,7 +197,7 @@ lifegame:
 		snif r2 eq r3
 			jump loop_refresh
 
-	refresh
+	;refresh
 	.pop r15
 	return
 ;jump loop_life

@@ -1,5 +1,4 @@
 .set r7 stack
-;jump currentbegin
 .let r0 0
 call clearscr
 .let r0 0xffff
@@ -195,7 +194,6 @@ call pause
 .let r1 24
 .let r4 20
 call tunnel_effect_wrapper
-print "end"
 
 .let r0 0
 call clearscr
@@ -249,16 +247,17 @@ life_wrapper:
 	.let r10 158; xmax
 	.let r11 126; ymax
 	call lifegame
+	refresh
 	.pop r3
 	sub r3 r3 1
 	snif r3 eq 0
 		jump life_wrapper
 
 
-currentbegin:
 call illuminati
+currentbegin:
 call fire
-
+call life_tunnel
 jump 0
 
 
@@ -281,7 +280,6 @@ tunnel_effect_wrapper:
 		add r2 r14 r1
 		copy r14 r2
 		sub r4 r4 1
-		print r4
 		snif r4 eq 0
 			jump __tunnel_effect_loop
 	return
@@ -312,7 +310,6 @@ tunnel_effect_wrapper:
 		;add r0 r13 4
 		;copy r13 r0
 		sub r4 r4 1
-		print r4
 		snif r4 eq 0
 			jump __tunnel_effect_loop
 	return
@@ -357,5 +354,6 @@ text10:
 #include vfx.s
 #include tunnel.s
 #include illuminati.s
+#include lifetunnel.s
 
 stack:

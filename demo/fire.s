@@ -14,11 +14,9 @@ fire:
 		.let r0 0
 		call loop_fire
 		.pop r0
-		print r0
 		sub r0 r0 1
 		snif r0 eq 0
 			jump __fire_loop
-	print "ok"
 	.pop r15
 	return
 
