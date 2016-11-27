@@ -1,5 +1,5 @@
 .set r7 stack
-;jump currentbegin
+jump currentbegin
 .let r0 0
 call clearscr
 .let r0 0xffff
@@ -197,7 +197,6 @@ call pause
 call tunnel_effect_wrapper
 print "end"
 
-currentbegin:
 .let r0 0
 call clearscr
 refresh
@@ -256,12 +255,13 @@ life_wrapper:
 		jump life_wrapper
 
 
+currentbegin:
 call illuminati
+call fire
 
 jump 0
 
 
-jump 0
 
 
 .align16
@@ -350,6 +350,7 @@ text9:
 text10:
 	.string "MADNESS?"
 
+#include fire.s
 #include life.s
 #include mandelbrot.s
 #include mathlut.s

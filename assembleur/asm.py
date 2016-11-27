@@ -634,8 +634,6 @@ def load_file(file_path):
 
 def first_pass(path, f, env):
     #in the first pass we compute the label offsets, add the instruction to the set and load included files
-    if path in env.already_loaded:
-        return
     env.already_loaded[path] = True;
     for l, line in f:
         if line[0][-1] == ":":
@@ -647,7 +645,8 @@ def first_pass(path, f, env):
             env.instr += [env.instr_set[line[0]](line, path, l+1,  env.line)]
             env.line += env.instr[-1].jump_line
         elif line[0] == "#include":
-            first_pass(line[1], load_file(line[1]), env)
+            if line[1] not in env.already_loaded:
+                first_pass(line[1], load_file(line[1]), env)
         else:
             if line[0][0] != ';':
                 print("[Error], Undefined instruction (ligne {}) in file {}: {}".format(l+1, path, line))

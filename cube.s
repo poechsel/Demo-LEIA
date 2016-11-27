@@ -23,97 +23,26 @@ call filltri
 
 
 .let r6 359
-.let r6 64
 loop:
 	letl r0 0
 	call clearscr
 ;	.let r0 8
-	.let r0 114
-	call morph_points
-	print "end"
 	.let r0 512
-	.let r0 114
 	.set r1 projection_ortho
 	call transform_points
 ;	.let r0 12
 	.let r0 968
-	.let r0 128
 	call transform_normals
 	.push r6
 	;.let r0 12
 	.let r0 968
-	.let r0 128
 	call draw_faces
-	letl r0 12
-	.let r0 114
-	;call draw_edges
 	.pop r6	
 	refresh
 	sub r6 r6 1
 	snif r6 slt 0
 		jump loop
 jump 0
-
-
-.align16
-morph_points:
-	.push r15
-	copy r5 r0
-	__morph_loop:
-		print r5
-		.set r3 points
-		add r3 r3 r5
-		add r3 r3 r5
-		add r3 r3 r5
-		sub r3 r3 1
-		rmem r2 [r3] 
-		sub r3 r3 1
-		rmem r1 [r3] 
-		sub r3 r3 1
-		rmem r0 [r3] 
-
-		.set r3 morph
-		add r3 r3 r5
-		add r3 r3 r5
-		add r3 r3 r5
-		sub r3 r3 1
-		rmem r12 [r3] 
-		sub r3 r3 1
-		rmem r11 [r3] 
-		sub r3 r3 1
-		rmem r10 [r3] 
-
-		print "-------------"
-		print r0
-		print r1
-		print r2
-		add r0 r0 r10
-		;lsr r3 r11 12
-		add r1 r1 r11
-		;lsr r3 r12 12
-		add r2 r2 r12
-		print r0
-		print r1
-		print r2
-
-
-		.set r3 points
-		add r3 r3 r5
-		add r3 r3 r5
-		add r3 r3 r5
-		sub r3 r3 1
-		wmem r2 [r3] 
-		sub r3 r3 1
-		wmem r1 [r3] 
-		sub r3 r3 1
-		wmem r0 [r3] 
-
-		sub r5 r5 1
-		snif r5 eq 0
-			jump __morph_loop
-	.pop r15
-	return
-
 
 
 .align16
@@ -693,8 +622,7 @@ projection_persp:
 	
 
 
-#include sphere_morph_lut.s
-;#include suzanne_datas.s
+#include suzanne_datas.s
 #include arithmetics.s
 #include vfx.s
 #include mathlut.s
