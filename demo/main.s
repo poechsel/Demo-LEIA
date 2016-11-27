@@ -1,4 +1,5 @@
 .set r7 stack
+jump currentbegin
 .let r0 0
 call clearscr
 .let r0 0xffff
@@ -254,8 +255,8 @@ life_wrapper:
 		jump life_wrapper
 
 
-call illuminati
 currentbegin:
+call illuminati
 call fire
 call life_tunnel
 jump 0
@@ -355,5 +356,6 @@ text10:
 #include tunnel.s
 #include illuminati.s
 #include lifetunnel.s
+#include cube.s
 
 stack:
