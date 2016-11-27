@@ -1,5 +1,5 @@
 .set r7 stack
-jump currentbegin
+;jump currentbegin
 .let r0 0
 call clearscr
 .let r0 0xffff

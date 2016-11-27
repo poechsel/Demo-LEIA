@@ -22,6 +22,7 @@ tunnel_effect:
 	call clearscr
 	.let r11 0
 	__tunnel_effect_loopy:
+		print r11
 		.let r10 0 
 		.let r8 64
 		xor r3 r3 r3

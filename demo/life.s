@@ -63,7 +63,8 @@ lifegame:
 		add r1 r1 1
 		.let r2 0
 		add r3 r3 1
-		
+		.push r10
+		.let r10 158
 		life_y:
 			add r2 r2 1
 			sub r3 r3 r10
@@ -164,7 +165,43 @@ lifegame:
 				snif r4 neq r0
 					jump mark_green
 
-jump end_mark_color			
+	
+		end_mark_color:
+			
+
+			snif r2 eq r11
+				jump life_y
+		.pop r10	
+		snif r1 eq r10
+			jump life_x
+	refresh	
+	
+	.let r3 0xb000
+	.let r2 0xffff
+	loop_refresh:
+		add r3 r3 1	
+		rmem r4 [r3]
+			
+		snif r4 eq r8; is r4 ([r3]'s pixel) red ?
+			jump not_red
+			.let r0 0
+			wmem r0 [r3]
+			jump end_refresh
+		
+		not_red:
+		snif r4 eq r9; is r4 green ?
+			jump end_refresh
+			wmem r2 [r3]
+		end_refresh:
+	
+		snif r2 eq r3
+			jump loop_refresh
+
+	refresh
+	.pop r15
+	return
+;jump loop_life
+	
 .align16
 value_color:
 	; r3 <- a pixel's adress
@@ -188,43 +225,7 @@ value_color:
 		jump end_value
 
 	end_value:
-	return
-	
-			end_mark_color:
-
-			snif r2 eq r11
-				jump life_y
-		
-		snif r1 eq r10
-			jump life_x
-	refresh	
-	
-	.let r3 0xb000
-	.let r2 0xffff
-	loop_refresh:
-		add r3 r3 1	
-		rmem r4 [r3]
-				
-		snif r4 eq r8; is r4 ([r3]'s pixel) red ?
-			jump not_red
-			.let r0 0
-			wmem r0 [r3]
-			jump end_refresh
-		
-		not_red:
-		snif r4 eq r9; is r4 green ?
-			jump end_refresh
-			wmem r2 [r3]
-		end_refresh:
-	
-		snif r2 eq r3
-			jump loop_refresh
-
-	refresh
-	.pop r15
-	return
-;jump loop_life
-	
+return
 .align16
 pixel_xy:
 	;r1 <- x
