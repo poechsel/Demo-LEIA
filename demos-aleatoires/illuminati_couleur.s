@@ -1,5 +1,6 @@
 .set r7 stack
 
+
 ; 0xfc00 red
 ; 0x03c0 green
 ; 0x003f blue
@@ -17,21 +18,21 @@
 
 .let r0 0xffff
 call clearscr
-refresh
+;refresh
 
 ;glider
-.let r0 0xb0a2
-.let r1 0xffff;blanc
-wmem r1 [r0]
-add r0 r0 r11
-add r0 r0 3
-wmem r1 [r0]
-add r0 r0 r11
-wmem r1 [r0]
-add r0 r0 1
-wmem r1 [r0]
-add r0 r0 1
-wmem r1 [r0]
+;.let r0 0xb0a2
+;.let r1 0xffff;blanc
+;wmem r1 [r0]
+;add r0 r0 r11
+;add r0 r0 3
+;wmem r1 [r0]
+;add r0 r0 r11
+;wmem r1 [r0]
+;add r0 r0 1
+;wmem r1 [r0]
+;add r0 r0 1
+;wmem r1 [r0]
 refresh 
 
 
@@ -110,6 +111,10 @@ loop_iter:
 		;refresh
 		snif r1 eq r12
 			jump loop_y
+
+		refresh
+		refresh
+		refresh
 		refresh
 ;maintenant, on actualise, càd on fait mourir les rouges et vivre les verts
 

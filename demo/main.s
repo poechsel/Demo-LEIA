@@ -244,7 +244,7 @@ mandeloop:
 refresh
 .let r0 5
 call pause 
-.let r3 180 
+.let r3 210 
 life_wrapper:
 	.push r3
 	.let r10 158; xmax
@@ -256,14 +256,35 @@ life_wrapper:
 		jump life_wrapper
 
 
+call illuminati
+
+jump 0
 
 
 jump 0
 
 
-jump 0
-
-
+.align16
+tunnel_effect_wrapper:
+	__tunnel_effect_loop:
+		.push r0
+		.push r1
+		.push r4
+		.push r15
+		call tunnel_effect
+		.pop r15
+		.pop r4
+		.pop r1
+		.pop r0
+		add r2 r13 r0
+		copy r13 r2
+		add r2 r14 r1
+		copy r14 r2
+		sub r4 r4 1
+		print r4
+		snif r4 eq 0
+			jump __tunnel_effect_loop
+	return
 
 
 
@@ -325,13 +346,15 @@ text7:
 text8:
 	.string "INFINITY"
 text9:
-	.string "Wait! There are"
-	.string "more"
+	.string "What about a bit of"
+text10:
+	.string "MADNESS?"
 
 #include life.s
 #include mandelbrot.s
 #include mathlut.s
 #include vfx.s
 #include tunnel.s
+#include illuminati.s
 
 stack:
