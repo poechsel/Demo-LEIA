@@ -52,7 +52,7 @@ loop_fire:
 			jump loop_random
 	;; inutilisés :
 	;; r2, r8
-	refresh
+	;refresh
 	.let r4 0xafff; 1 unit before start of screen
 	.let r5 0 ; x
 	refresh_fire:
