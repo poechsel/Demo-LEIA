@@ -1,5 +1,5 @@
 .set r7 stack
-jump currentbegin
+;jump currentbegin
 .let r0 0
 call clearscr
 .let r0 0xffff
@@ -207,6 +207,7 @@ refresh
 call pause
 
 .let r3 0xb000
+.let r6 6
 mandelbrotwrapper_loop_mem:
 	rmem r0 [r3]
 	.let r2 0x0060
@@ -222,11 +223,28 @@ mandelbrotwrapper_loop_mem:
 	add r3 r3 1
 	snif r3 eq 0
 		jump mandelbrotwrapper_loop_mem
+	refresh
+mandeloop:
+	.let r3 0xb000
+	mandelbrotloopmem:
+		rmem r0 [r3]
+		letl r2 -1
+		sub r0 r2 r0
+		wmem r0 [r3]
+		add r3 r3 1
+		snif r3 eq 0
+			jump mandelbrotloopmem
+	refresh
+	.let r0 5
+	call pause
+	sub r6 r6 1
+	snif r6 eq 0
+		jump mandeloop
 ;call glid_w
 refresh
-.let r0 180
+.let r0 5
 call pause 
-.let r3 256
+.let r3 180 
 life_wrapper:
 	.push r3
 	.let r10 158; xmax
