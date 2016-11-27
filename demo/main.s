@@ -1,5 +1,5 @@
 .set r7 stack
-
+jump currentbegin
 .let r0 0
 call clearscr
 .let r0 0xffff
@@ -77,7 +77,7 @@ loop_circle:
 		jump loop_circle
 
 
-.let r0 30
+.let r0 120
 call pause
 refresh
 
@@ -135,7 +135,7 @@ call putstr
 refresh
 
 
-.let r0 45
+.let r0 90
 call pause
 
 .let r0 0xff00
@@ -197,12 +197,49 @@ call pause
 call tunnel_effect_wrapper
 print "end"
 
-
+currentbegin:
 .let r0 0
 call clearscr
 refresh
 call mandelbrot
 refresh
+.let r0 180
+call pause
+
+.let r3 0xb000
+mandelbrotwrapper_loop_mem:
+	rmem r0 [r3]
+	.let r2 0x0060
+	snif r0 lt r2
+		letl r0 -1
+	snif r0 neq 0
+		letl r0 -1
+	.let r2 0xffff
+	snif r0 eq -1
+		letl r0 0
+	;sub r0 r2 r0
+	wmem r0 [r3]
+	add r3 r3 1
+	snif r3 eq 0
+		jump mandelbrotwrapper_loop_mem
+;call glid_w
+refresh
+.let r0 180
+call pause 
+.let r3 256
+life_wrapper:
+	.push r3
+	.let r10 158; xmax
+	.let r11 126; ymax
+	call lifegame
+	.pop r3
+	sub r3 r3 1
+	snif r3 eq 0
+		jump life_wrapper
+
+
+
+
 jump 0
 
 
@@ -273,6 +310,7 @@ text9:
 	.string "Wait! There are"
 	.string "more"
 
+#include life.s
 #include mandelbrot.s
 #include mathlut.s
 #include vfx.s

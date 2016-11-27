@@ -1,7 +1,10 @@
+
+.align16
+glid_w:
+.push r15
 .let r0 0
 call clearscr
 refresh
-
 .let r0 0xb000
 .let r10 160
 snif r3 le r0
@@ -31,22 +34,25 @@ add r3 r3 r10
 add r3 r3 r10 
 add r3 r3 r10
 refresh
-
+print "coucou"
 snif r1 eq r3
 	jump gliding
 ;print coucou
 refresh 
+.pop r15
+return
 
-.let r8 0xfc00 ; r8 is red
-.let r9 0x03c0 ; r9 is green
-
-.let r10 158; xmax
-.let r11 126; ymax
+;.let r10 158; xmax
+;.let r11 126; ymax
 
 ;glider
 
 .align16
-loop_life:
+;loop_life:
+lifegame:
+.push r15
+	.let r8 0xfc00 ; r8 is red
+	.let r9 0x03c0 ; r9 is green
 	; r1 <- x from 0 to 159
 	; r2 <- y from 0 to 127
 	.let r1 0
@@ -215,7 +221,9 @@ value_color:
 			jump loop_refresh
 
 	refresh
-jump loop_life
+	.pop r15
+	return
+;jump loop_life
 	
 .align16
 pixel_xy:
@@ -231,29 +239,6 @@ pixel_xy:
 	letl r0 0
 	sub r0 r0 r3
 	add r3 r0 r1
-	return
-	.let r3 0xb000
-	.let r4 160
-	.let r0 127; on descend jusque y
-	add_pixel_y:
-		snif r0 neq r2
-			jump end_add_y
-		add r3 r3 r4
-		sub r0 r0 1
-		jump add_pixel_y
-
-	end_add_y:
-
-	.let r0 0 ; on monte jusque x
-	add_pixel_x:
-		snif r0 neq r1
-			jump end_add_x
-		add r0 r0 1
-		add r3 r3 1
-		jump add_pixel_x
-	end_add_x:
-	.let r4 0 ; reset r4
-	.let r0 0 ; reset r0
 	return
 
 #include vfx.s
