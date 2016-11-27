@@ -348,7 +348,7 @@ text9:
 text10:
 	.string "MADNESS?"
 
-#include fire.s
+#include blue_fire2.s
 #include life.s
 #include mandelbrot.s
 #include mathlut.s

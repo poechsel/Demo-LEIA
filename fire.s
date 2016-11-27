@@ -29,6 +29,7 @@ loop_fire:
 	.align16
 	loop_random:
 		.let r1 69 ; multiplicateur
+		print r2
 		copy r0 r2 
 
 		;;pseudo-random generator
