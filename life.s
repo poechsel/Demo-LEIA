@@ -34,7 +34,7 @@ refresh
 
 snif r1 eq r3
 	jump gliding
-print coucou
+;print coucou
 refresh 
 
 .let r8 0xfc00 ; r8 is red
@@ -66,8 +66,8 @@ loop_life:
 			copy r12 r1
 			copy r13 r2
 			copy r14 r3
-			print "0"
-			print r14	
+			;print "0"
+			;print r14	
 			.let r5 0 ; r5 will contain the sum of all side pixels
 			.let r6 4
 			
@@ -122,13 +122,13 @@ loop_life:
 			
 			copy r1 r12
 			copy r2 r13
-			print "1"
-			print r14
+			;print "1"
+			;print r14
 			copy r3 r14
-			print r3
+			;print r3
 			call pixel_xy
-			print "2" 
-			print r3
+			;print "2" 
+			;print r3
 			;print r3
 			.let r0 2
 			snif r5 neq r0
@@ -224,6 +224,14 @@ pixel_xy:
 	;puts pixel (x,y)'s adress into r3
 	;erases registers r4, r0
 	;keeps r1,r2 values 
+	add r0 r2 1
+	lsl r3 r0 7
+	lsl r0 r0 5
+	add r3 r3 r0
+	letl r0 0
+	sub r0 r0 r3
+	add r3 r0 r1
+	return
 	.let r3 0xb000
 	.let r4 160
 	.let r0 127; on descend jusque y
