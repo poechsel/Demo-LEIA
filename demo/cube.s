@@ -120,34 +120,6 @@ plot_head:
 	.pop r6	
 	.pop r15
 	return
-;loop:
-;	letl r0 0
-;	call clearscr
-;	.let r0 8
-;	.let r0 512
-;	.set r1 projection_ortho
-;	.set r13 cube_points
-;	.set r14 cube_transformed_points
-;	call transform_points
-;	.let r0 12
-;	.let r0 968
-;	.set r13 cube_normals
-;	.set r14 cube_transformed_normals
-;	call transform_normals
-;	.push r6
-;	.let r6 12
-;	.let r0 0xfc0f
-;	.let r0 968
-;	.set r12 cube_transformed_normals
-;	.set r13 cube_triangles
-;	.set r14 cube_transformed_points
-;	call draw_faces
-;	.pop r6	
-;	refresh
-;	sub r6 r6 1
-;	snif r6 slt 0
-;		jump loop
-;jump 0
 
 
 .align16
@@ -337,7 +309,7 @@ draw_faces:
 		lsl r3 r3 5
 		or r3 r3 r4
 		;lsl r3 r3 10
-		lsl r2 r1 7
+		;lsl r2 r1 7
 		and r0 r0 r3
 
 
@@ -346,7 +318,6 @@ draw_faces:
 		lsr r1 r1 15
 		snif r1 eq 1
 			jump __draw_faces_end
-		print r3
 		.push r6
 		copy r5 r13
 ;		.set r5 triangles
@@ -579,18 +550,10 @@ filltri:
 	__filltri_rewrite4:
 	letl r2 0
 	leth r2 0
-	;.let r14 68
-	;.push r14
-	;.let r14 80
-	;.push r14
-	;now we need to go through the screen
-;	.let r15 0xaf60
 	__filltri_loopy:
 		__filltri_rewrite3:
 		letl r1 0
 		leth r1 0
-		
-		;.pop r14
 		.push r4
 		.push r5
 		.push r6
@@ -601,13 +564,10 @@ filltri:
 			or r3 r4 r5
 			or r3 r3 r6
 			lsr r3 r3 15
-			;.let r0 465
 			
 			snif r3 eq 1
 				;wmem r0 [r15]
 				call plotpx
-;			add r1 r15 1
-;			copy r15 r1
 			.pop r2
 			.pop r1
 
@@ -618,7 +578,6 @@ filltri:
 			__filltri_rewrite1:
 			letl r14 160
 			leth r14 0
-			;.let r14 160
 			snif r1 eq r14
 				jump __filltri_loopx
 		.pop r6
@@ -628,18 +587,11 @@ filltri:
 		add r5 r5 r9	
 		add r6 r6 r10	
 		add r2 r2 1
-		;.let r14 128
-	;	.pop r15
-	;	.push r15
-	;	.push r14
 		__filltri_rewrite2:
 		letl r14 128
 		leth r14 0
 		snif r2 eq r14
 			jump __filltri_loopy
-	;.pop r14
-	;.pop r15
-;	refresh
 	.pop r15
 	return
 

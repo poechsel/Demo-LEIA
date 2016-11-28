@@ -1,5 +1,5 @@
 .set r7 stack
-jump currentbegin
+;jump currentbegin
 .let r0 0
 call clearscr
 .let r0 0xffff
@@ -262,7 +262,7 @@ call life_tunnel
 currentbegin:
 
 
-.let r6 120
+.let r6 70
 loop_cube1:
 	.let r0 0x001f
 	call clearscr
@@ -282,10 +282,78 @@ loop_sphere1:
 	call plot_sphere
 	refresh
 	sub r6 r6 1
-	.let r5 250
+	.let r5 290
 	snif r6 eq r5
 		jump loop_sphere1
+loop_sphere2:
+	.let r0 0x03e0
+	call clearscr
+	.set r1 projection_persp
+	.let r0 0xfc00
+	call plot_sphere
+	refresh
+	sub r6 r6 1
+	.let r5 250
+	snif r6 eq r5
+		jump loop_sphere2
+loop_cube2:
+	.let r0 0x0000
+	call clearscr
+	.set r1 projection_ortho
+	.let r0 0x001f
+	call plot_cube
+	refresh
+	sub r6 r6 1
+	.let r5 200
+	snif r6 eq r5
+		jump loop_cube2
+loop_cube3:
+	.let r0 0xfc00
+	call clearscr
+	.set r1 projection_ortho
+	.let r0 0x0000
+	call plot_cube
+	refresh
+	sub r6 r6 1
+	.let r5 100
+	snif r6 eq r5
+		jump loop_cube3
+loop_cube4:
+	.let r0 0xfc00
+	call clearscr
+	.set r1 projection_persp
+	.let r0 0xffff
+	call plot_cube
+	refresh
+	sub r6 r6 1
+	.let r5 0
+	snif r6 eq r5
+		jump loop_cube4
 
+.let r6 359
+loop_cube5:
+	.let r0 0xfc00
+	call clearscr
+	.set r1 projection_persp
+	.let r0 0xffff
+	call plot_cube
+	refresh
+	sub r6 r6 1
+	.let r5 200
+	snif r6 eq r5
+		jump loop_cube5
+
+.set r7 stack
+loop_cube6:
+	.let r0 0xffff
+	call clearscr
+	.set r1 projection_ortho
+	.let r0 0xfc00
+	call plot_cube
+	refresh
+	sub r6 r6 1
+	snif r6 eq 0
+		jump loop_cube6
 
 .let r6 359
 loop_head:
@@ -300,6 +368,28 @@ loop_head:
 		jump loop_head
 .let r0 120
 call pause
+
+
+.let r4 0
+.let r0 0xffff
+call clearscr
+refresh
+.let r0 0x0000
+.let r1 10
+.let r2 85
+.set r3 text9
+call putstr
+refresh
+.let r0 0x0000
+.let r1 10
+.let r2 75
+.set r3 text10
+call putstr
+refresh
+
+.let r0 120
+call pause
+
 jump 0
 
 
@@ -385,9 +475,9 @@ text7:
 text8:
 	.string "INFINITY"
 text9:
-	.string "What about a bit of"
+	.string "Now, it is really"
 text10:
-	.string "MADNESS?"
+	.string "the end"
 
 #include blue_fire2.s
 #include life.s
