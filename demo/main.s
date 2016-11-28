@@ -1,5 +1,8 @@
 .set r7 stack
-;jump currentbegin
+
+jump abc
+
+
 .let r0 0
 call clearscr
 .let r0 0xffff
@@ -259,9 +262,9 @@ call illuminati
 call fire
 call life_tunnel
 
-currentbegin:
+abc:
 
-
+;; 3d moment
 .let r6 70
 loop_cube1:
 	.let r0 0x001f

@@ -1,5 +1,7 @@
 .align16
 putstr:
+	;put a string on the screen at coordinates (r1, r2) with the color r3
+	;if r4 is not 1 then refresh between each letter
 	copy r6 r3
 	__putstr_loop:
 		rmem r3 [r6]
@@ -23,12 +25,7 @@ putstr:
 	return
 .align16
 putchar:
-	;r4->screen ptr
-	;r2->y
-	;r0->col
-	;r1->x
-
-
+	;put a char on the screen
 	;;get the pointer to the screen
 	add r2 r2 1
 	lsl r4 r2 7
@@ -87,14 +84,7 @@ putchar:
 
 .align16
 line:
-	;http://www.falloutsoftware.com/tutorials/dd/dd4.htm
-	;r0 -> couleur
-	;r1 -> x1
-	;r2 -> e
-	;r3 -> screen_pointer
-
-	;r5 -> memory
-
+	; draw a line
 
 	letl r5 0x5f
 	leth r5 0xff
@@ -109,6 +99,7 @@ line:
 	add r2 r2 1
 	.push r5
 
+	; all the case are to reduce the problem to one octant
 	snif r3 ge r1   ;si x2 >= x1
 		jump __line_ifr3ger1
 	sub r1 r3 r1
@@ -151,6 +142,7 @@ line:
 
 	copy r8 r2
 	.pop r2
+	; main loop
 	letl r4 -2
 	__line_loop:
 		wmem r0 [r2]
@@ -199,7 +191,7 @@ clearscr:
 
 .align16
 fill:
-
+	; first we make sur to plot from the bottom left to the bottom right
 	snif r1 le r3
 		jump __fill_r1>r3
 	;r1<=r3

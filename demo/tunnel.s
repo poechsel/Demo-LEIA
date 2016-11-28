@@ -1,21 +1,9 @@
-
-;xor r0 r0 r0
-;.let r13 1
-;.let r14 1
-;.let r4 1
-;loop:
-;call tunnel_effect
-;add r0 r14 1
-;copy r14 r0
-;add r0 r13 4
-;copy r13 r0
-;.let r4 1
-;snif r4 eq 0
-;	jump loop
-;jump 0
-
 .align16
 tunnel_effect:
+	; r13 and r14 are the angle and the distance of the triangle
+	; this is a modified version of the algorithm presentend at lodev.org
+	; because we don't have enough space to compute the lut as he presents, we use symmetry and basic trigonometry to compress them down to 1/8th of their size
+	; we only stock the first octant as a triangle in memory and refers to it for every other pixels
 	xor r3 r3 r3
 	.push r15
 	xor r0 r0 r0
@@ -77,13 +65,6 @@ tunnel_effect:
 			copy r8 r0
 			rmem r1 [r8]
 
-			;lsl r0 r10 6
-			;add r0 r0 r11
-			;.set r8 lut_tunnel_dists
-			;add r0 r8 r0
-			;copy r8 r0
-			;rmem r2 [r8]
-		
 			
 			.set r8 offset_tunnel
 			add r4 r8 r6
@@ -185,39 +166,40 @@ tunnel_effect:
 	refresh
 	return
 
-.align16
-sqrt:
-	;;r0 the nb
-	xor r1 r1 r1
-
-	letl r2 1
-	lsl r2 r2 14
-	__sqrt_loop1:
-		snif r2 gt r0
-			jump __sqrt_l1end
-		lsr r2 r2 2
-		jump __sqrt_loop1
-	__sqrt_l1end:
-
-	__sqrt_loop2:
-		snif r2 neq 0
-			jump __sqrt_l2end
-		add r3 r2 r1
-		snif r0 sgt r3
-			jump __sqrt_else
-		sub r0 r0 r3
-		lsr r1 r1 1
-		add r1 r1 r2
-		jump __sqrt_endif
-		__sqrt_else:
-		lsr r1 r1 1
-			
-		__sqrt_endif:
-		lsr r2 r2 2
-		jump __sqrt_loop2
-	__sqrt_l2end:
-copy r0 r1
-return
+; old code, can compute the square root of a number
+;.align16
+;sqrt:
+;	;;r0 the nb
+;	xor r1 r1 r1
+;
+;	letl r2 1
+;	lsl r2 r2 14
+;	__sqrt_loop1:
+;		snif r2 gt r0
+;			jump __sqrt_l1end
+;		lsr r2 r2 2
+;		jump __sqrt_loop1
+;	__sqrt_l1end:
+;
+;	__sqrt_loop2:
+;		snif r2 neq 0
+;			jump __sqrt_l2end
+;		add r3 r2 r1
+;		snif r0 sgt r3
+;			jump __sqrt_else
+;		sub r0 r0 r3
+;		lsr r1 r1 1
+;		add r1 r1 r2
+;		jump __sqrt_endif
+;		__sqrt_else:
+;		lsr r1 r1 1
+;			
+;		__sqrt_endif:
+;		lsr r2 r2 2
+;		jump __sqrt_loop2
+;	__sqrt_l2end:
+;	copy r0 r1
+;return
 
 #include lut_tunnel.s
 #include img_tunnel.s

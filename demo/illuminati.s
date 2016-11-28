@@ -21,7 +21,6 @@ illuminati:
 		.push r0
 		call illuminati_loop_iter
 		.pop r0
-		print r0
 		sub r0 r0 1
 		snif r0 eq 0
 			jump __illuminati_loop

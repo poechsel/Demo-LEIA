@@ -296,26 +296,33 @@ draw_faces:
 	;	.let r0 0xfc00
 		.push r0
 		;; prepare the bitmap to darken areas that are not well aligned
-		;; it willbe in the form dist dist dist
-		.let r4 0x00ff
-		and r3 r1 r4
-		sub r3 r4 r3
-		lsr r3 r3 2
-		.let r4 0x003f
-		and r3 r3 r4
-		lsr r4 r3 1
-		lsl r3 r3 5
-		or r3 r3 r4
-		lsl r3 r3 5
-		or r3 r3 r4
-		;lsl r3 r3 10
-		;lsl r2 r1 7
-		and r0 r0 r3
+		;; it will be in the form dist dist dist
+		;; Their is a little hack: when the color is red we use an other way to compute the color to avoid "black triangles" due to the loss of precision when masking
+		.let r4 0xfc00
+		snif r0 eq r4
+			jump __draw_faces_notred
+		jump __draw_faces_red
+		__draw_faces_notred:
+			.let r4 0x00ff
+			and r3 r1 r4
+			sub r3 r4 r3
+			lsr r3 r3 2
+			.let r4 0x003f
+			and r3 r3 r4
+			lsr r4 r3 1
+			lsl r3 r3 5
+			or r3 r3 r4
+			lsl r3 r3 5
+			or r3 r3 r4
+			and r0 r0 r3
+		jump __draw_faces_endcolor
+		__draw_faces_red:
+			lsl r2 r1 7
+			and r0 r0 r2
+		__draw_faces_endcolor:
 
-
-
-		;copy r3 r1
 		lsr r1 r1 15
+		; if the triangle have a normal directed toward us, then we draw them (backface culling)
 		snif r1 eq 1
 			jump __draw_faces_end
 		.push r6
