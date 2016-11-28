@@ -271,9 +271,21 @@ loop_cube1:
 	call plot_cube
 	refresh
 	sub r6 r6 1
-
 	snif r6 eq 0
 		jump loop_cube1
+.let r6 359
+loop_sphere1:
+	.let r0 0x03e0
+	call clearscr
+	.set r1 projection_ortho
+	.let r0 0xfc00
+	call plot_sphere
+	refresh
+	sub r6 r6 1
+	.let r5 250
+	snif r6 eq r5
+		jump loop_sphere1
+
 
 .let r6 359
 loop_head:
