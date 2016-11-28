@@ -262,6 +262,18 @@ call life_tunnel
 currentbegin:
 
 
+.let r6 120
+loop_cube1:
+	.let r0 0x001f
+	call clearscr
+	.set r1 projection_ortho
+	.let r0 0x03e0
+	call plot_cube
+	refresh
+	sub r6 r6 1
+
+	snif r6 eq 0
+		jump loop_cube1
 
 .let r6 359
 loop_head:
