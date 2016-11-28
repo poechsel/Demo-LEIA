@@ -1,40 +1,3 @@
-;letl r0 0
-;call clearscr
-;refresh
-
-;letl r0 0xFF
-;leth r0 0xFF
-
-;.set r7 stack
-
-;.let r0 0xffff
-;letl r1 0
-;letl r2 0
-;letl r3 50
-;letl r4 0
-;letl r5 00
-;letl r6 50
-
-
-;call filltri
-;refresh
-;jump 0
-;.let r6 359
-;loop:
-;.let r0 0
-;call clearscr
-;.set r1 projection_ortho
-;.let r0 0xfc00
-;call plot_head
-;refresh
-;sub r6 r6 1
-;snif r6 eq 0
-;	jump loop
-;jump 0
-
-
-
-;.let r6 359
 .align16
 plot_cube:
 	.push r15
@@ -124,6 +87,9 @@ plot_head:
 
 .align16
 transform_points:
+	; r13 -> adress to the points
+	; r14 -> adress to the transformed_points
+	; r0 -> number of point
 	.push r15
 	copy r5 r0
 	.set r9 __transform_points_rewrite
@@ -132,6 +98,7 @@ transform_points:
 	or r1 r2 r1
 	wmem r1 [r9]
 	__transform_points_loop:
+		; get the current point
 		copy r3 r13
 		add r3 r3 r5
 		add r3 r3 r5
@@ -144,10 +111,10 @@ transform_points:
 		rmem r0 [r3] 
 		.push r13
 		.push r14
-;		.push r6
 		.push r5
 		.push r6
 
+		; rotate it
 		.push r2
 		copy r2 r6
 		call rotation ;rotate on axis z
@@ -168,16 +135,11 @@ transform_points:
 		copy r1 r0
 		letl r0 0xFF
 		.pop r6
-;		.push r1
-;		.push r2
-;		call plotpx
-;		.pop r2
-;		.pop r1
 		.pop r5
 		.pop r14
 		.pop r13
 		copy r3 r14
-		;.set r3 transformed_points
+		; write the 2d point in memory
 		add r3 r3 r5
 		add r3 r3 r5
 		sub r3 r3 1
@@ -192,6 +154,10 @@ transform_points:
 
 .align16
 transform_normals:
+	; r13 -> adress of normals
+	; r14 -> adress of transformed normals
+	; r0 -> number of normals
+	; does the same thing than transform_normals except it is for normals
 	.push r15
 	copy r5 r0
 	__transform_normals_loop:
@@ -230,6 +196,7 @@ transform_normals:
 		.pop r14
 		.pop r13
 		
+		; we only keep the z coordinates because it is the only one useful for us
 		copy r3 r14
 		add r3 r3 r5
 		sub r3 r3 1
@@ -240,6 +207,7 @@ transform_normals:
 	.pop r15
 	return
 
+;; this code could draw_edges. Not compatible with current version
 ;.align16
 ;draw_edges:
 ;	.push r15
@@ -327,7 +295,7 @@ draw_faces:
 			jump __draw_faces_end
 		.push r6
 		copy r5 r13
-;		.set r5 triangles
+		; get the index of the points of the triangle
 		add r5 r5 r6
 		add r5 r5 r6
 		add r6 r5 r6
@@ -340,8 +308,8 @@ draw_faces:
 		.pop r6
 		.push r6
 		.push r12
+		; get the points corresponding to each index
 		copy r12 r14
-;		.set r12 transformed_points
 		copy r6 r9
 		lsl r6 r6 1
 		add r6 r6 r12
@@ -386,6 +354,10 @@ draw_faces:
 
 .align16
 filltri:
+	; r0 -> color
+	; draw the triangle ((r1, r2), (r3, r4), (r5, r6)) to the screen and fill it with color r0
+	;; we first compute the bounding box. Then for each pixel of this bounding box we check thanks to the sign of 3 crossproducts wether it is inside the triangle or not
+	;; to accelerate the process we develop the formula of the crossproducts: after pretreatements only one addition per pixel is needed to compute them 
 	.push r15
 	.push r0
 
@@ -420,31 +392,25 @@ filltri:
 	copy r13 r0
 
 
-	;todo
+	; rewrite the code to take into account the bounding box
 	.set r10 __filltri_rewrite1
 	copy r11 r12
 	leth r11 0xce
-	;.let r11 0xce50
 	wmem r11 [r10]
 	.set r10 __filltri_rewrite2
 	copy r11 r13
 	leth r11 0xce
-	;.let r11 0xce44
 	wmem r11 [r10]
 
 	.set r10 __filltri_rewrite3
 	copy r11 r14
 	leth r11 0xc1
-	;.let r11 0xc140
 	wmem r11 [r10]
 	.set r10 __filltri_rewrite4
 	copy r11 r15
 	leth r11 0xc2
-	;.let r11 0xc234
 	wmem r11 [r10]
 	
-	;.let r14 0x40
-	;.let r15 0x34
 
 	;; compute the increments
 	sub r0 r5 r3
@@ -461,6 +427,7 @@ filltri:
 	copy r13 r0		;v1.y - v0.y
 	
 
+	; compute the cross product for the first point we are going to walk through
 	.push r2
 	.push r1
 	.push r3
@@ -547,11 +514,9 @@ filltri:
 	.pop r5
 	.pop r4
 
-	
 
 	
-
-	
+	; now go through all pixels of the bounding box
 
 	.pop r0
 	__filltri_rewrite4:
@@ -656,6 +621,7 @@ rotation:
 
 .align16
 projection_ortho:
+; orthogonal projection of point (r0, r11 r2)
 	asr r0 r0 3
 	asr r1 r1 3
 	letl r6 80
@@ -700,25 +666,6 @@ projection_persp:
 	add r0 r0 r6
 	.pop r15
 	return
-;.set r4 lut_cos
-	;add r4 r4 r7
-	;rmem r4 [r4]
-	;copy r2 r4
-	;asr r2 r2 3
-	;add r2 r2 r6
-
-	;.set r4 lut_sin
-	;add r4 r4 r7
-	;rmem r4 [r4]
-	;copy r1 r4
-	;asr r1 r1 3
-	;add r1 r1 r6
-	;call plotpx
-	;refresh
-	;add r7 r7 1
-	
-	;snif r7 eq r13
-	;	jump loop
 
 	
 
@@ -728,4 +675,3 @@ projection_persp:
 #include cube_data.s
 #include sphere_data.s
 #include head_data.s
-;stack:

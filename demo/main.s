@@ -1,6 +1,5 @@
 .set r7 stack
 
-jump abc
 
 
 .let r0 0
