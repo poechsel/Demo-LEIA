@@ -1,54 +1,153 @@
-letl r0 0
-call clearscr
+;letl r0 0
+;call clearscr
 ;refresh
 
-letl r0 0xFF
-leth r0 0xFF
+;letl r0 0xFF
+;leth r0 0xFF
 
-.set r7 stack
+;.set r7 stack
 
-.let r0 0xffff
-letl r1 0
-letl r2 0
-letl r3 50
-letl r4 0
-letl r5 00
-letl r6 50
+;.let r0 0xffff
+;letl r1 0
+;letl r2 0
+;letl r3 50
+;letl r4 0
+;letl r5 00
+;letl r6 50
 
 
-call filltri
+;call filltri
 ;refresh
+;jump 0
+;.let r6 359
+;loop:
+;.let r0 0
+;call clearscr
+;.set r1 projection_ortho
+;.let r0 0xfc00
+;call plot_head
+;refresh
+;sub r6 r6 1
+;snif r6 eq 0
+;	jump loop
 ;jump 0
 
 
-.let r6 359
-loop:
-	letl r0 0
-	call clearscr
-;	.let r0 8
-	.let r0 512
-	.set r1 projection_ortho
-	.set r13 points
-	.set r14 transformed_points
-	call transform_points
-;	.let r0 12
-	.let r0 968
-	.set r13 normals
-	.set r14 transformed_normals
-	call transform_normals
+
+;.let r6 359
+.align16
+plot_cube:
+	.push r15
+	;;r0 -> color
+	;;r1 -> projection
+	;;r6 -> angle
+	;;conserve r6
 	.push r6
-	;.let r0 12
-	.let r0 968
-	.set r12 transformed_normals
-	.set r13 triangles
-	.set r14 transformed_points
+	.push r0
+	.push r1
+	.let r0 8
+	.pop r1
+	.set r13 cube_points
+	.set r14 cube_transformed_points
+	call transform_points
+	.let r0 12
+	.set r13 cube_normals
+	.set r14 cube_transformed_normals
+	call transform_normals
+	.let r6 12
+	.pop r0
+	.set r12 cube_transformed_normals
+	.set r13 cube_triangles
+	.set r14 cube_transformed_points
 	call draw_faces
 	.pop r6	
-	refresh
-	sub r6 r6 1
-	snif r6 slt 0
-		jump loop
-jump 0
+	.pop r15
+	return
+
+.align16
+plot_sphere:
+	.push r15
+	;;r0 -> color
+	;;r1 -> projection
+	;;r6 -> angle
+	;;conserve r6
+	.push r6
+	.push r0
+	.push r1
+	.let r0 114
+	.pop r1
+	.set r13 sphere_points
+	.set r14 sphere_transformed_points
+	call transform_points
+	.let r0 224
+	.set r13 sphere_normals
+	.set r14 sphere_transformed_normals
+	call transform_normals
+	.let r6 224
+	.pop r0
+	.set r12 sphere_transformed_normals
+	.set r13 sphere_triangles
+	.set r14 sphere_transformed_points
+	call draw_faces
+	.pop r6	
+	.pop r15
+	return
+.align16
+plot_head:
+	.push r15
+	;;r0 -> color
+	;;r1 -> projection
+	;;r6 -> angle
+	;;conserve r6
+	.push r6
+	.push r0
+	.push r1
+	.let r0 104
+	.pop r1
+	.set r13 head_points
+	.set r14 head_transformed_points
+	call transform_points
+	.let r0 192
+	.set r13 head_normals
+	.set r14 head_transformed_normals
+	call transform_normals
+	.let r6 192
+	.pop r0
+	.set r12 head_transformed_normals
+	.set r13 head_triangles
+	.set r14 head_transformed_points
+	call draw_faces
+	.pop r6	
+	.pop r15
+	return
+;loop:
+;	letl r0 0
+;	call clearscr
+;	.let r0 8
+;	.let r0 512
+;	.set r1 projection_ortho
+;	.set r13 cube_points
+;	.set r14 cube_transformed_points
+;	call transform_points
+;	.let r0 12
+;	.let r0 968
+;	.set r13 cube_normals
+;	.set r14 cube_transformed_normals
+;	call transform_normals
+;	.push r6
+;	.let r6 12
+;	.let r0 0xfc0f
+;	.let r0 968
+;	.set r12 cube_transformed_normals
+;	.set r13 cube_triangles
+;	.set r14 cube_transformed_points
+;	call draw_faces
+;	.pop r6	
+;	refresh
+;	sub r6 r6 1
+;	snif r6 slt 0
+;		jump loop
+;jump 0
 
 
 .align16
@@ -159,7 +258,6 @@ transform_normals:
 		.pop r14
 		.pop r13
 		
-		.set r3 transformed_normals
 		copy r3 r14
 		add r3 r3 r5
 		sub r3 r3 1
@@ -170,53 +268,51 @@ transform_normals:
 	.pop r15
 	return
 
-.align16
-draw_edges:
-	.push r15
-	.set r5 edges
-	.set r13 edges
-	add r5 r5 r0
-	add r5 r5 r0
-	__draw_edges_loop:
-		sub r5 r5 1
-		rmem r10 [r5]
-		sub r5 r5 1
-		rmem r11 [r5]
-		.push r5
-		.set r12 transformed_points
-		copy r5 r10
-		lsl r5 r5 1
-		add r5 r5 r12
-		copy r10 r5
-
-		copy r5 r11
-		lsl r5 r5 1
-		add r5 r5 r12
-		copy r11 r5
-
-		rmem r1 [r10]
-		copy r5 r10
-		add r5 r5 1
-		copy r10 r5
-		rmem r2 [r10]
-		rmem r3 [r11]
-		copy r5 r11
-		add r5 r5 1
-		copy r11 r5
-		rmem r4 [r11]
-		letl r0 0xff
-		call line
-		.pop r5
-
-		snif r5 eq r13
-			jump __draw_edges_loop
-	.pop r15
-	return
+;.align16
+;draw_edges:
+;	.push r15
+;	.set r5 edges
+;	.set r13 edges
+;	add r5 r5 r0
+;	add r5 r5 r0
+;	__draw_edges_loop:
+;		sub r5 r5 1
+;		rmem r10 [r5]
+;		sub r5 r5 1
+;		rmem r11 [r5]
+;		.push r5
+;		copy r5 r10
+;		lsl r5 r5 1
+;		add r5 r5 r12
+;		copy r10 r5
+;
+;		copy r5 r11
+;		lsl r5 r5 1
+;		add r5 r5 r12
+;		copy r11 r5
+;
+;		rmem r1 [r10]
+;		copy r5 r10
+;		add r5 r5 1
+;		copy r10 r5
+;		rmem r2 [r10]
+;		rmem r3 [r11]
+;		copy r5 r11
+;		add r5 r5 1
+;		rmem r4 [r11]
+;		letl r0 0xff
+;		call line
+;		.pop r5
+;
+;		snif r5 eq r13
+;			jump __draw_edges_loop
+;	.pop r15
+;	return
 
 .align16
 draw_faces:
 	.push r15
-	copy r6 r0
+;	copy r6 r0
 	__draw_faces_loop:
 		;test the normal
 		copy r5 r12
@@ -224,13 +320,33 @@ draw_faces:
 		add r5 r5 r6
 		sub r5 r5 1
 		rmem r1 [r5]
-		.let r0 0xfc00
+
+	;	.let r0 0xfc00
+		.push r0
+		;; prepare the bitmap to darken areas that are not well aligned
+		;; it willbe in the form dist dist dist
+		.let r4 0x00ff
+		and r3 r1 r4
+		sub r3 r4 r3
+		lsr r3 r3 2
+		.let r4 0x003f
+		and r3 r3 r4
+		lsr r4 r3 1
+		lsl r3 r3 5
+		or r3 r3 r4
+		lsl r3 r3 5
+		or r3 r3 r4
+		;lsl r3 r3 10
 		lsl r2 r1 7
-		and r0 r0 r2
+		and r0 r0 r3
+
+
+
+		;copy r3 r1
 		lsr r1 r1 15
 		snif r1 eq 1
 			jump __draw_faces_end
-
+		print r3
 		.push r6
 		copy r5 r13
 ;		.set r5 triangles
@@ -283,6 +399,7 @@ draw_faces:
 		.pop r6
 		__draw_faces_end:
 		sub r6 r6 1
+		.pop r0
 		snif r6 eq 0
 			jump __draw_faces_loop
 	.pop r15
@@ -582,8 +699,9 @@ rotation:
 projection_ortho:
 	asr r0 r0 3
 	asr r1 r1 3
-	letl r6 64
+	letl r6 80
 	add r0 r0 r6
+	letl r6 64
 	add r1 r1 r6
 	return
 	
@@ -648,5 +766,7 @@ projection_persp:
 #include mathlut.s
 #include arithmetics.s
 #include vfx.s
-#include suzanne_datas.s
-stack:
+#include cube_data.s
+#include sphere_data.s
+#include head_data.s
+;stack:

@@ -255,10 +255,27 @@ life_wrapper:
 		jump life_wrapper
 
 
-currentbegin:
 call illuminati
 call fire
 call life_tunnel
+
+currentbegin:
+
+
+
+.let r6 359
+loop_head:
+	.let r0 0xffff
+	call clearscr
+	.set r1 projection_ortho
+	.let r0 0xfc00
+	call plot_head
+	refresh
+	sub r6 r6 1
+	snif r6 eq 0
+		jump loop_head
+.let r0 120
+call pause
 jump 0
 
 
