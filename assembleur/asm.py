@@ -302,33 +302,6 @@ class CustomSet(_Instruction):
             return [[_Erreur(self, "Label", "not defined")]]
 
 
-class Push(_Instruction):
-    """
-    push instruction
-    syntax: push register -> push register on the stack
-    """
-    def __init__(self, *args):
-        super(Push, self).__init__(*args)
-        self.args_nb = 1
-        self.jump_line = 1
-    
-    def parse(self, env):
-        return [self.addThing(0b00001, 11) + self.addThing(self.read_register(self.words[1], False), 0)]
-
-
-class Pop(_Instruction):
-    """
-    pop instruction
-    syntax: pop register -> pop the top of the stack in register
-    """
-    def __init__(self, *args):
-        super(Pop, self).__init__(*args)
-        self.args_nb = 1
-        self.jump_line = 1
-    
-    def parse(self, env):
-        return [self.addThing(0b1111, 12) + self.addThing(0b1000, 4) + self.addThing(self.read_register(self.words[1], False), 0)]
-
 class CustomPush(_Instruction):
     """
     pop instruction
@@ -601,29 +574,6 @@ def load_file(file_path):
         #then put a space between comments to avoid problems
         #then split it to get the words
         PATTERN = re.compile(r'''((?:[^\s"']|"[^"]*"|'[^']*')+)''')
-        """ o = []
-        for l, line in enumerate(file):
-            if line.strip() != '':
-                lined = line.strip().lower().replace(";", " ;").split()
-                line_out = []
-                print(lined)
-                temp = ""
-                for e in lined:
-                    print(e)
-                    if e[0] == "\"":
-                        temp += e
-                    if temp != "":
-                        temp += " " + e
-                    else:
-                        line_out += e
-                    if e[-1] == "\"":
-                        line_out += [temp]
-                        temp = ""
-                if temp != "":
-                    line_out += [temp]
-                o += [(l, line_out)]
-        return o
-        """
         o = []
         for l, line in enumerate(file):
             nl = PATTERN.split(line.strip().replace(";", " ;"))[1::2]
@@ -633,7 +583,6 @@ def load_file(file_path):
                     for i in range(1, len(nl)):
                         nl[i] = nl[i].lower()
                 o.append((l, nl))
-        #return [(l, PATTERN.split(line.strip().lower().replace(";", " ;"))[1::2]) for l, line in enumerate(file) if line.strip() != '']
         return o
     return None
 
